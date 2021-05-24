@@ -1,0 +1,70 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>审核管理</cite></a>
+		<a><cite>动态审核列表</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+
+			<!--数据表格-->
+			<table id="LAY-examine-manage-dynamic" lay-filter="LAY-examine-manage-dynamic"></table>
+			
+			<!--通过、驳回-->
+			<script type="text/html" id="table-dynamic-operation">
+				<a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+				{{#  if(d.isPass===0){ }}
+					<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="pass">通过</a>
+					<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="reject">拒绝</a>
+				{{#  } else{ }}
+					<a class="layui-btn layui-btn-normal layui-btn-disabled layui-btn-xs" >通过</a>
+					<a class="layui-btn layui-btn-danger layui-btn-disabled layui-btn-xs" >拒绝</a>
+				{{#  } }}
+			</script>
+			
+			<script type="text/html" id="examineStatus">
+				{{#  if(d.isPass===0){ }}
+			    	<button class="layui-btn layui-btn-normal layui-btn-xs">未审核</a>
+			    {{#  } else if(d.isPass===1){ }}
+			    	<button class="layui-btn layui-btn-xs">通过</button>
+			    {{#  } else{ }}
+			    	<button class="layui-btn layui-btn-danger layui-btn-xs">未通过</a>
+			    {{#  } }}
+			</script>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('examine', layui.factory('examine')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+		  
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

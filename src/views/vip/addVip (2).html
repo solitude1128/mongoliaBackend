@@ -1,0 +1,151 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+    <!--套餐名称-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">套餐名称</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="name" lay-verify="Ndouble" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--套餐价格-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">套餐价格</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="price" lay-verify="number" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+
+    <!--上传图片-->
+    <div class="layui-block" style="width: 200px;margin-top: 15px;">
+        <div class="layui-upload">
+            <button type="button" class="layui-btn" id="test1" style="position: absolute;left: 25px;">上传图片</button>
+            <div class="layui-upload-list" style="position: absolute;left: 200px;">
+                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;width:100px;height: 40px;position: absolute;left: -70px;top: -20px;">
+                    预览图：
+                    <img id="demo1" class="img" width="40px" style="position: absolute;left: 70px;">
+                    <p id="demoText" style="position: absolute;left: 120px;"></p>
+                    <input type="hidden" name="photo" id="demo2" lay-verify="photo" value="" />
+                </blockquote>
+            </div>
+        </div>
+    </div>
+
+    <!--套餐说明-->
+    <br /><br /><br /><br />
+    <div class="layui-form-item">
+        <label class="layui-form-label">套餐说明</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="detail" placeholder="请输入" lay-verify="required" autocomplete="off " class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--积分额度-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">积分额度</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="integralMax" placeholder="请输入" lay-verify="Ndouble" autocomplete="off" class="layui-input ">
+            </script>
+        </div>
+    </div>
+    <!--是否上架-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否上架</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="checkbox" name="ifSale" lay-skin="switch" lay-filter="switchTest" title="上架|下架">
+            </script>
+        </div>
+    </div>
+
+
+    <!--使用期限-->
+    <!--<div class="layui-form-item ">
+	    <label class="layui-form-label ">使用期限</label>
+	    <div class="layui-input-inline ">
+	      <script type="text/html " template>
+	        <input type="text " name="term "  lay-verify="numbers " placeholder="请输入 " autocomplete="off " class="layui-input ">
+	      </script>
+	    </div>
+  	</div>-->
+
+    <!--确认-->
+    <div class="layui-form-item" style="margin-top: 15px;">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-vip-front-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    layui.use(['admin', 'form', 'upload', 'jquery'], function() {
+        var $ = layui.$,
+            form = layui.form,
+            jquery = layui.jquery,
+            upload = layui.upload;
+
+        $('body').on('click', '.img', function() {
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 0,
+                area: 'auto',
+                maxHeight: 600,
+                maxWidth: 600,
+                skin: 'layui-layer-nobg',
+                shadeClose: true,
+                content: '<img style="max-width: 600px;max-height: 600px; " src=" ' + $(this).attr('src ') + ' "/>'
+            });
+            e.stopPropagation();
+        });
+
+
+        var uploadInst = upload.render({
+            elem: '#test1',
+            url: layui.setter.urll + '/api/upload/image',
+            before: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $('#demo1').attr('src', result);
+                });
+            },
+            done: function(data) {
+                $('#demo2').val(data.data);
+            },
+            error: function() {
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722; ">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload ">重试</a>');
+                demoText.find('.demo-reload').on('click', function() {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+        form.verify({
+            Ndouble: [
+                /^[1-9]\d*$/, '只能输入整数哦'
+            ]
+        });
+
+        form.verify({
+            photo: function(value, item) {
+                if (value == '') {
+                    return '请上传图片';
+                }
+            }
+        });
+        //监听指定开关
+        form.on('switch(switchTest)', function(data) {
+            data.value = this.checked * 1
+        });
+    })
+</script>

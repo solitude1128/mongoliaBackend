@@ -1,0 +1,50 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+  <!--设置积分可兑换现金比例-->
+  <div class="layui-form-item" >
+    <label class="layui-form-label">设置比例</label>
+    <div class="layui-input-inline" style="display: flex;">
+      <script type="text/html" template>
+	        <input type="text" id="money" name="money" placeholder="现金" style="width: 100px;" autocomplete="off" class="layui-input">
+	      	 <div class="layui-form-mid">&nbsp;&nbsp;:</div>
+	        <input type="text" id="integral" name="integral" placeholder="积分" style="width: 100px;" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--确认-->
+  <div class="layui-form-item" style="margin-top: 20px;">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-integralRule-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+  
+</div>
+
+<script type="text/javascript">
+	layui.use(['layer', 'form', 'table', 'layedit', 'laydate', 'jquery'], function () {
+        var form = layui.form,
+            laydate = layui.laydate,
+            layer = layui.layer,
+            $ = layui.jquery;
+            
+			$.ajax({
+			    url: layui.setter.urll+'/api/admin/integral/rule/list'
+			    ,method:"get"
+			    ,data:{
+	          		'token': layui.data('data').token
+	          	}
+			    ,success:function(result){
+			    	var proportion = result.data[0].proportion;
+			        $('#money').val(proportion.split(":")[0]);
+			        $('#integral').val(proportion.split(":")[1]);
+			    }
+			    ,error:function(data){
+			    	layer.alert('操作失败',{icon:2});
+			    }
+			})
+	});
+</script>

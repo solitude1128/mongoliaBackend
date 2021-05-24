@@ -1,0 +1,104 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>音频分类管理</cite></a>
+        <a><cite>分类管理</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+
+    <div class="layui-card">
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+        </div>
+
+        <div class="layui-card-body">
+
+            <!--添加分类-->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加分类</button>
+            </div>
+
+            <!--数据表格-->
+            <table id="LAY-classification-manage" lay-filter="LAY-classification-manage"></table>
+
+            <!--编辑、删除-->
+            <script type="text/html" id="table-classification-operation">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail"><i class="layui-icon layui-icon-search"></i>查看</a>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    layui.use('classification', layui.factory('classification')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        form.render();
+
+
+        //事件
+        var active = {
+            add: function() {
+                admin.popup({
+                    title: '添加分类',
+                    area: ['500px', '300px'],
+                    id: 'LAY-popup-user-add',
+                    success: function(layero, index) {
+                        view(this.id).render('classification/addClassification').done(function() {
+                            form.render();
+                            //监听提交
+                            form.on('submit(LAY-classification-front-submit)', function(data) {
+                                var field = data.field; //获取提交的字段
+                                console.log(field);
+                                $.ajax({
+                                    url: layui.setter.urll + "/api/admin/class/audio/add",
+                                    type: "post",
+                                    contentType: 'application/json;charset=UTF-8',
+                                    data: JSON.stringify({
+                                        'token': layui.data('data').token,
+                                        'className': field.name /*分类*/ ,
+                                        'sort': field.sort /*排序值*/
+                                    }),
+                                    success: function(data) {
+                                        if (data.data == 1) {
+                                            layer.alert('已添加', {
+                                                icon: 1
+                                            });
+                                            layui.table.reload('LAY-classification-manage');
+                                        } else {
+                                            layer.alert('添加失败，请稍后重试', {
+                                                icon: 2
+                                            });
+                                        }
+
+                                    },
+                                    error: function(data) {
+                                        layer.alert('添加失败，请稍后重试', {
+                                            icon: 2
+                                        });
+                                    }
+                                });
+                                layer.close(index); //执行关闭 
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

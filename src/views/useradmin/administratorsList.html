@@ -1,0 +1,112 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>权限管理</cite></a>
+        <a><cite>管理员管理</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+
+    <div class="layui-card">
+
+        <div class="layui-card-body">
+            <!--新增管理员-->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">新增管理员</button>
+            </div>
+
+            <!--数据表格-->
+            <table id="LAY-user-back-manage" lay-filter="LAY-user-back-manage"></table>
+
+            <!--编辑、删除-->
+            <script type="text/html" id="table-useradmin-webuser">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="freeze"><i class="layui-icon layui-icon-snowflake"></i>冻结</a>
+            </script>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        form.render();
+
+        /*监听搜索*/
+        form.on('submit(LAY-comment-front-search)', function(data) {
+            var field = data.field;
+            console.log(field);
+            table.reload('LAY-user-back-manage', {
+                url: layui.setter.urll + '/admin/user/screenUserGET',
+                method: 'POST',
+                contentType: 'application/json;charset=UTF-8',
+                where: {
+                    name: field.name,
+                    uploadTime: field.uploadTime,
+                    status: field.status
+                },
+                page: true
+            });
+        });
+
+        //事件
+        var active = {
+            add: function() {
+                admin.popup({
+                    title: '新增管理员',
+                    area: ['550px', '450px'],
+                    id: 'LAY-popup-user-add',
+                    success: function(layero, index) {
+                        view(this.id).render('useradmin/addUserAdmin').done(function() {
+                            form.render();
+                            form.on('submit(LAY-useradmin-front-submit)', function(data) {
+                                var field = data.field;
+                                console.log(field);
+                                $.ajax({
+                                    url: layui.setter.urll + '/api/admin/auth/user/add',
+                                    type: "post",
+                                    contentType: 'application/json;charset=UTF-8',
+                                    data: JSON.stringify({
+                                        'token': layui.data('data').token,
+                                        'username': field.adminName /*管理员名称*/ ,
+                                        'password': field.passWord /*密码*/ ,
+                                        'rolesId': field.role /*角色id*/ ,
+                                        'radioId': field.radioType /*电台分类id*/ ,
+                                        'phone': field.tel /*联系方式*/
+                                    }),
+                                    success: function(data) {
+                                        layer.alert('已添加,您的登录账号为   ' + data.data + '  请妥善保管。', {
+                                            icon: 1
+                                        });
+                                        layui.table.reload('LAY-user-back-manage');
+                                    },
+                                    error: function(data) {
+                                        layer.alert('添加失败，请稍后重试', {
+                                            icon: 2
+                                        });
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

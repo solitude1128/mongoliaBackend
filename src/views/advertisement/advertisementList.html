@@ -1,0 +1,221 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>广告管理</cite></a>
+        <a><cite>轮播图管理</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+
+    <div class="layui-card">
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+
+            <div class="layui-form-item">
+
+                <!--轮播图名称-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">轮播图名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <!--上传时间-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">上传时间</label>
+                    <div class="layui-input-inline" style="width: 176px;">
+                        <input class="layui-input layui-input-inline" style="width: 186px;" name="uploadTime" id="uploadTime" placeholder="上传时间  :  yyyy-MM-dd" autocomplete="off">
+                    </div>
+                </div>
+
+                <!--状态-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block" style="width: 186px;">
+                        <select name="status">
+							<option value="">不限</option>
+							<option value="1">上架</option>
+							<option value="0">下架</option>
+						</select>
+                    </div>
+                </div>
+
+                <!--搜索按钮-->
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-advertisement-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+
+            <!--添加轮播图-->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加轮播图</button>
+            </div>
+
+            <!--数据表格-->
+            <table id="LAY-advertisement-manage" lay-filter="LAY-advertisement-manage"></table>
+
+            <!--轮播图-->
+            <script type="text/html" id="imgTpl">
+                <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.imgUrl+ "/"+d.imgUrl}}>
+            </script>
+
+            <!--编辑、删除-->
+            <script type="text/html" id="table-advertisement-operation">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+
+            <!--上架、下架-->
+            <script type="text/html" id="bannerLowerStatus">
+                {{# if(d.imgState===1){ }}
+                <input type="checkbox" checked="" name="open" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchBanner" lay-text="上架|下架"> {{# } else { }}
+                <input type="checkbox" name="close" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchBanner" lay-text="上架|下架"> {{# } }}
+            </script>
+
+            <!--跳转音频-->
+            <script type="text/html" id="tAudio">
+                {{ ((d.imgAddress).split(','))[0] }}
+            </script>
+            <script type="text/html" id="tBgColor">
+                <div style="background-color: {{ d.backColor }};height:100%"></div>
+            </script>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    layui.use('advertisement', layui.factory('advertisement')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        form.render();
+
+        /*日期时间范围选择*/
+        laydate.render({
+            elem: '#uploadTime',
+            type: 'datetime',
+            range: true
+        });
+
+        /*点击查看大图*/
+        $('body').on('click', '.img', function() {
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 0,
+                area: 'auto',
+                maxHeight: 600,
+                maxWidth: 600,
+                skin: 'layui-layer-nobg',
+                shadeClose: true,
+                content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr('src') + '"/>'
+            });
+            e.stopPropagation();
+        });
+
+
+        /*监听搜索*/
+        form.on('submit(LAY-advertisement-front-search)', function(data) {
+            console.log(data);
+            var field = data.field;
+            var upTime = field.uploadTime;
+            var strs = new Array();
+            if (upTime != null) {
+                strs = upTime.split(" - ");
+            }
+            table.reload('LAY-advertisement-manage', {
+                url: layui.setter.urll + '/api/admin/banner/search',
+                method: 'get',
+                where: {
+                    token: layui.data('data').token,
+                    name: field.name.replace(/\s*/g, ""),
+                    start: strs[0],
+                    end: strs[1],
+                    state: field.status.replace(/\s*/g, "")
+                },
+                page: true
+            });
+        });
+        /*事件*/
+        var active = {
+            add: function() {
+                admin.popup({
+                    title: '添加轮播图',
+                    area: ['450px', '600px'],
+                    id: 'LAY-popup-user-add',
+                    success: function(layero, index) {
+                        view(this.id).render('advertisement/edit').done(function() {
+                            form.render();
+                            //监听提交
+                            form.on("submit(LAY-advertisement-front-submit)", function(data) {
+                                var field = data.field;
+                                console.log(field);
+                                $.ajax({
+                                    url: layui.setter.urll + "/api/admin/banner/add",
+                                    method: "post",
+                                    contentType: "application/json;charset=UTF-8",
+                                    data: JSON.stringify({
+                                        token: layui.data("data").token,
+                                        imgName: field.name /*轮播图名称*/ ,
+                                        imgTitle: field.title /*标题*/ ,
+                                        imgSort: field.sort /*排序值*/ ,
+                                        imgUrl: field.photo /*图片路径*/ ,
+                                        imgAddress: field.imgAddress /*跳转音频*/ ,
+                                        stopTime: field.stopTime, //滞留时间
+                                        backColor: field.backColor, //背景颜色
+                                    }),
+                                    success: function(data) {
+                                        if (data.data == 1) {
+                                            layer.alert("已更新", {
+                                                icon: 1
+                                            });
+                                            layui.table.reload("LAY-advertisement-manage");
+                                        } else {
+                                            layer.alert("编辑失败，请稍后重试", {
+                                                icon: 2
+                                            });
+                                        }
+                                        if (data.code == 403) {
+                                            layer.closeAll();
+                                            admin.exit();
+                                            setTimeout(function() {
+                                                layer.alert("此账号已在别处登录,请重新登录！", {
+                                                    icon: 5
+                                                });
+                                            }, 666);
+                                        }
+                                    },
+                                    error: function(data) {
+                                        layer.alert("编辑失败，请稍后重试", {
+                                            icon: 2
+                                        });
+                                    },
+                                });
+                                layer.close(index);
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

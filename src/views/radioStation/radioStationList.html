@@ -1,0 +1,207 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>电台分类管理</cite></a>
+		<a><cite>电台分类</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+
+		<div class="layui-card-body">
+			
+			<!--添加一级分类-->
+			<div style="padding-bottom: 10px;">
+				<!-- <script type="text/html"> -->
+					<!-- {{#  if(layui.data('data').rid == 0){ }} -->
+						<button class="layui-btn layuiadmin-btn-useradmin" data-type="add" id="addone">添加一级分类</button>
+					<!-- {{#  } else{ }}{{#  } }} -->
+			    <!-- </script> -->
+			<!--添加二级分类-->
+				<button class="layui-btn layuiadmin-btn-useradmin" data-type="addThree">添加二级分类</button>
+			
+			<!--添加三级分类-->
+				<button class="layui-btn layuiadmin-btn-useradmin" data-type="addFor">添加三级分类</button>
+			</div>
+
+			<!--数据表格-->
+			<table id="LAY-radio-manage" lay-filter="LAY-radio-manage"></table>
+			
+			<!--编辑、删除-->
+			<script type="text/html" id="table-radio-operation">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+			</script>
+			
+			<!--分类等级-->
+			<script type="text/html" id="grade">
+				{{#  if(d.level===1){ }}
+					<button class="layui-btn layui-btn-xs">一级分类</button>
+			    {{#  } else if(d.level===2){ }}
+			    	<button class="layui-btn layui-btn-warm layui-btn-xs">二级分类</button>
+			    {{#  } else{ }}
+			    	<button class="layui-btn layui-btn-normal layui-btn-xs">三级分类</a>
+			    {{#  } }}
+			</script>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('radioStation', layui.factory('radioStation')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+
+			console.log(layui.data('data').rid);
+			if(layui.data('data').rid == 0){
+				$('#addone').show();
+			}else{
+				$('#addone').hide();
+			}
+		
+		//事件
+		var active = {
+			add: function() {
+				admin.popup({
+					title: '添加一级分类',
+					area: ['550px', '300px'],
+					id: 'LAY-popup-user-add',
+					success: function(layero, index) {
+						view(this.id).render('radioStation/addClassification').done(function() {
+							form.render();
+							//监听提交
+							form.on('submit(LAY-radio-front-submit)', function(data) {
+								var field = data.field; //获取提交的字段
+								console.log(field);
+								$.ajax({
+					              	url:layui.setter.urll+'/api/admin/class/radio/add'
+					                ,method:"post"
+					              	,contentType:'application/json;charset=UTF-8'
+					              	,data: JSON.stringify({
+					              		 'token': layui.data('data').token
+					              		,'title':field.name/*分类名称*/
+					              		,'baseId':0			/*父级分类id*/
+						                ,'sort':field.sort/*排序值*/
+						                ,'level':1			/*添加的分类等级*/
+					              	}),
+					                  success:function(data){
+					                  	if(data.data==1){
+					                  		layer.alert('添加成功',{icon:1});
+					                  		layui.table.reload('LAY-radio-manage');
+					                  	}else{
+					                  		layer.alert('添加失败，请稍后重试',{icon:2});
+					                  	}
+					                  },
+					                  error:function(data){
+					                      layer.alert('添加失败，请稍后重试',{icon:2});
+					                  }
+					              });
+								layer.close(index);
+							});
+						});
+					}
+				});
+			}
+			,addThree: function() {
+				admin.popup({
+					title: '添加二级分类',
+					area: ['550px', '350px'],
+					id: 'LAY-popup-user-add',
+					success: function(layero, index) {
+						view(this.id).render('radioStation/addClassificationThree').done(function() {
+							form.render();
+							//监听提交
+							form.on('submit(LAY-radio-front-submit)', function(data) {
+								var field = data.field; //获取提交的字段
+								console.log(field);
+								if(layui.data('data').rid != 0){
+									field.two=layui.data('data').rid;
+								}
+								$.ajax({
+					              	url:layui.setter.urll+'/api/admin/class/radio/add'
+					                ,method:"post"
+					              	,contentType:'application/json;charset=UTF-8'
+					              	,data: JSON.stringify({
+					              		 'token': layui.data('data').token
+					              		,'title':field.name			/*分类名称*/
+					              		,'baseId':field.two			/*父级分类id*/
+						                ,'sort':field.sort			/*排序值*/
+						                ,'level':2					/*添加的分类等级*/
+					              	}),
+					                  success:function(data){
+					                  	if(data.data==1){
+					                  		layer.alert('添加成功',{icon:1});
+					                  		layui.table.reload('LAY-radio-manage');
+					                  	}else{
+					                  		layer.alert('添加失败，请稍后重试',{icon:2});
+					                  	}
+					                },
+					                  error:function(data){
+					                      layer.alert('添加失败，请稍后重试',{icon:2});
+					                  }
+					              });
+								layer.close(index);
+							});
+						});
+					}
+				});
+			}
+			,addFor: function() {
+				admin.popup({
+					title: '添加三级分类',
+					area: ['550px', '380px'],
+					id: 'LAY-popup-user-add',
+					success: function(layero, index) {
+						view(this.id).render('radioStation/addClassificationFor').done(function() {
+							form.render();
+							form.on('submit(LAY-radio-front-submit)', function(data) {
+								var field = data.field; //获取提交的字段
+								console.log(field);
+								$.ajax({
+					              	url:layui.setter.urll+'/api/admin/class/radio/add'
+					                ,method:"post"
+					              	,contentType:'application/json;charset=UTF-8'
+					              	,data: JSON.stringify({
+					              		 'token': layui.data('data').token
+					              		,'title':field.name				/*分类名称*/
+					              		,'baseId':field.cataType2		/*父级分类id*/
+						                ,'sort':field.sort				/*排序值*/
+						                ,'level':3						/*添加的分类等级*/
+					              	}),
+					                  success:function(data){
+					                  	if(data.data==1){
+					                  		layer.alert('添加成功',{icon:1});
+					                  		layui.table.reload('LAY-radio-manage');
+					                  	}else{
+					                  		layer.alert('添加失败，请稍后重试',{icon:2});
+					                  	}
+					                },
+					                  error:function(data){
+					                      layer.alert('添加失败，请稍后重试',{icon:2});
+					                  }
+					              });
+								layer.close(index);
+							});
+						});
+					}
+				});
+			}
+		};
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

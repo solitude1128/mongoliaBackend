@@ -1,0 +1,32 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+  <!--id-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="id" value="{{ d.params.id || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--标签名称-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">标签名称</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="name" value="{{ d.params.content || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-label-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+  
+</div>

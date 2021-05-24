@@ -1,0 +1,58 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+  <!--管理员名称-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">角色名称</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="roleName"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+	  
+	  
+	<!--角色权限-->
+    <div class="layui-form-item layui-form" lay-filter="component-form-element" style="margin-top: 10px;">
+        <label class="layui-form-label">角色权限</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template lay-done="layui.data.groups(d);">
+                <div id="auth">
+                </div>
+            </script>
+        </div>
+    </div>
+    
+	  <!--确认-->
+	  <div class="layui-form-item" style="margin-top: 15px;">
+	    <label class="layui-form-label"></label>
+	    <div class="layui-input-inline">
+	      <input type="button" lay-submit lay-filter="LAY-role-front-submit" value="确认" class="layui-btn">
+	    </div>
+	  </div>
+</div>
+
+<script>
+    layui.use(['admin', 'form'], function () {
+        var $ = layui.$
+        , form = layui.form;
+        layui.data.groups = function (d) {
+            (function () {
+                $.ajax({
+                    url: layui.setter.urll + '/api/admin/auth/all',
+                    type: 'get',
+	                data:{'token': layui.data('data').token},
+                    success: function (data) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            var temp = '<input type="checkbox" class="parent"  lay-filter="hope" id="' + data.data[i].id + '" value="' + data.data[i].id + '" name="checkbox" title="' + data.data[i].authTitle + '" data-pid="' + data.data[i].id + '">';
+                            $('#auth').append(temp);
+                            form.render();
+                        }
+                    }
+                });
+            })();
+        };
+    })
+</script>
+

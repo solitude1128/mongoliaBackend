@@ -1,0 +1,111 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+  <!--选择一级分类-->
+  <div class="layui-form-item" id="classOne">
+    <label class="layui-form-label">一级分类</label>
+    <div class="layui-input-inline">
+      <select name="two" id="two" lay-verify="required">
+      </select>
+    </div>
+  </div>
+
+  <!--名称-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">名称</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="name"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+
+  <!--排序-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">排序</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" id="sort" name="sort"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" id="confirm" lay-submit lay-filter="LAY-radio-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  layui.use(['layer', 'form', 'table', 'layedit', 'laydate', 'jquery'], function () {
+    var form = layui.form,
+      laydate = layui.laydate,
+      layer = layui.layer,
+      $ = layui.jquery;
+
+    if (layui.data('data').rid == 0) {
+      $('#classOne').show();
+    } else {
+      $('#classOne').hide();
+    }
+
+    var list = [];
+    setTimeout(function () {
+      $.ajax({
+        url: layui.setter.urll + '/api/admin/class/radio/sort/2',
+        dataType: 'JSON',
+        crossurll: true,
+        type: 'get',
+        data: {
+          'token': layui.data('data').token
+        },
+        success: function (data) {
+          if (data.code == 403) {
+            layer.closeAll();
+            admin.exit();
+            setTimeout(function () {
+              layer.alert('此账号已在别处登录,请重新登录！', { icon: 5 });
+            }, 666);
+          }
+          list = data.data;
+        }
+      });
+    }, 666);
+
+    $('#confirm').click(function () {
+      var result = $(":input[name='sort']").val();
+      for (var i = 0; i < list.length; i++) {
+        if (result == list[i]) {
+          layer.msg('排序已存在，请重新输入');
+          $(":input[name='sort']").focus();
+          return false;
+        }
+      }
+    });
+
+    if (layui.data('data').rid == 0) {
+      $.ajax({
+        url: layui.setter.urll + '/api/admin/class/radio/all/0'
+        , method: "get"
+        , data: {
+          'token': layui.data('data').token
+        }
+        , success: function (result) {
+          var list = result["data"];
+          var server = document.getElementById("two");
+          for (var p in list) {
+            var option = document.createElement("option");
+            option.setAttribute("value", list[p].id);
+            option.innerText = list[p].title;
+            server.appendChild(option);
+            form.render("select");
+          }
+        }
+      });
+    }
+  });
+</script>

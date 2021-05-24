@@ -1,0 +1,64 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+    <div class="layui-form-item layui-form" lay-filter="component-form-element">
+    	
+        <label class="layui-form-label">权限选择</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template lay-done="layui.data.groups(d);">
+                <div id="auth">
+                </div>
+            </script>
+        </div>
+        
+	    <div class="layui-form-item">
+	        <label class="layui-form-label"></label>
+	        <div class="layui-input-inline"  style="margin-top: 15px;">
+	            <input type="button" lay-submit lay-filter="LAY-user-role-submit" value="确认" class="layui-btn">
+	        </div>
+	    </div>
+	    
+	</div>
+	
+</div>
+<script>
+    layui.use(['admin', 'form'], function () {
+
+        var $ = layui.$
+            , form = layui.form;
+            
+        layui.data.groups = function (d) {
+            (function () {
+                $.ajax({
+                    url: layui.setter.urll + '/api/admin/auth/all',
+                    type: 'get',
+	                data: {
+		                'token': layui.data('data').token,
+	                },
+                    success: function (data) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            var a = '<div class="line"></div><input type="checkbox" id="' + data.data[i].id + '" value="' + data.data[i].id + '" name="checkbox" title="' + data.data[i].authTitle + '" data-pid="' + data.data[i].id + '">';
+                            $('#auth').append(a);
+                            form.render();
+                        }
+						$.ajax({
+		                    url: layui.setter.urll + '/api/admin/auth/role/all',
+		                    type: 'get',
+			                data: {
+				                'token': layui.data('data').token,
+				                'id':d.params.id
+			                },
+		                    success: function (data) {
+		                        var cont = data.data;
+		                        console.log(cont);
+		                        for (var i = 0; i < cont.length; i++) {
+		                            $('input[value=' + cont[i].id + ']').next().click();
+		                        }
+		                    }
+		                });
+                    }
+                });
+                
+            })();
+        };
+    })
+</script>

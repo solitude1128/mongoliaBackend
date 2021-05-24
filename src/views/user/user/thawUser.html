@@ -1,0 +1,33 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+	<!--uid-->
+	<div class="layui-form-item">
+	    <div class="layui-input-inline">
+	      <script type="text/html" template>
+	        <input type="hidden" name="uid" value="{{ d.params.uid || '' }}" autocomplete="off" class="layui-input">
+	      </script>
+	    </div>
+  	</div>
+  	
+  	<!--解冻账号、评论功能-->
+    <div class="layui-form-item" style="margin-top: 15px;">
+	    <label class="layui-form-label">请选择</label>
+	    <div class="layui-input-block">
+	      <script type="text/html" template>
+	        <input type="radio" name="thawAccountOrComment"  value="0" title="解冻账号" checked>
+			<input type="radio" name="thawAccountOrComment"  value="1" title="解冻评论功能">
+	      </script>
+	    </div>
+	</div>
+	  
+	<!--确认-->
+	<div class="layui-form-item">
+	    <label class="layui-form-label"></label>
+	    <div class="layui-input-inline">
+	      <input type="button" lay-submit lay-filter="LAY-user-front-submit" value="确认" class="layui-btn">
+	    </div>
+	</div>
+</div>
+

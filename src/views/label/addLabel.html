@@ -1,0 +1,35 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+  <!--添加标签-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">标签标题</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="labelName"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  
+  <!--标签类型-->
+	<div class="layui-form-item" style="width: 200px;">
+		<label class="layui-form-label">标签类型</label>
+		<div class="layui-input-block">
+			<select name="status">
+				<option value="3">动态</option>
+				<option value="1">音频</option>
+			</select>
+		</div>
+	</div>
+  
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-label-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+</div>
+

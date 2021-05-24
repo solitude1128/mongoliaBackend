@@ -1,0 +1,218 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+  <!--音频名称-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">音频名称</label>
+    <div class="layui-input-inline" style="margin-left: 10px;">
+      <script type="text/html" template>
+        <input type="text" name="name"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+  <!--音频标题-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">音频标题</label>
+    <div class="layui-input-inline" style="margin-left: 10px;">
+      <script type="text/html" template>
+        <input type="text" name="title"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+  <!--音频简介-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">音频简介</label>
+    <div class="layui-input-inline" style="margin-left: 10px;">
+      <script type="text/html" template>
+        <textarea type="text" name="introduce" class="layui-input"  style="resize:none;width: 235px;height: 100px;" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+  <!--上传音频-->
+  <div class="layui-form-item">
+  	<input type="hidden" id="audioLength" lay-verify="audio" name="audioLength"/>
+  	<input type="hidden" name="audioPath" />
+    <label class="layui-form-label">
+    	<button type="button" class="layui-btn" id="upMusic" style="position: absolute;left: 0px;">
+    		<i class="layui-icon"></i>
+    		上传音频
+    	</button>
+    </label>
+    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-left: 120px;width: 200px;">
+	    音频预览：
+	    <div class="layui-upload-list" id="audioDemo"></div>
+	</blockquote>
+  </div>
+
+  <!--上传lrc文件歌词-->
+  <div class="layui-form-item">
+  	<input type="hidden" id="lrc" name="lrc"/>
+    <label class="layui-form-label">
+    	<button type="button" class="layui-btn" id="upFile" style="position: absolute;left: 5px;">
+		  	<i class="layui-icon"></i>
+		  	lrc  歌  词
+		</button>
+    </label>
+    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-left: 120px;width: 200px;">
+	    歌词预览：
+	    <div class="layui-upload-list" id="lrcDemo"></div>
+	</blockquote>
+  </div>
+
+  <!--上传图片-->
+  	<div class="layui-block" style="width: 200px;margin-top: 15px;">
+  		<input type="hidden" name="photo" id="image" lay-verify="photo"/>
+	  	<div class="layui-upload">
+		  <button type="button" class="layui-btn" id="test1" style="position: absolute;left: 22px;">上传图片</button>
+		  <div class="layui-upload-list" style="position: absolute;left: 200px;">
+		  	<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;width:100px;height: 40px;position: absolute;left: -60px;top: -20px;">
+		  	预览图：
+		    <img id="demo1" class="img"  width="40px"  style="position: absolute;left: 70px;>
+		    <input type="hidden"/>
+		    </blockquote>
+		  </div>
+		</div>
+	</div>
+	<br /><br /><br /><br />
+
+  	  <!--是否付费-->
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">是否付费</label>
+	    <div class="layui-input-block">
+	      <script type="text/html" template>
+	        <input type="radio" name="isPopular"  value="1" title="是" checked>
+			<input type="radio" name="isPopular"  value="0" title="否">
+	      </script>
+	    </div>
+	  </div>
+
+	  <!--确认-->
+	  <div class="layui-form-item" >
+	    <label class="layui-form-label"></label>
+	    <div class="layui-input-inline">
+	      <input type="button" lay-submit lay-filter="LAY-audio-front-submit" value="确认" class="layui-btn">
+	    </div>
+	  </div>
+
+</div>
+
+
+<!--加载select下拉框-->
+<script type="text/javascript">
+	layui.use(['layer', 'form', 'table', 'layedit', 'laydate', 'jquery','upload'], function () {
+        var form = layui.form,
+        laydate = layui.laydate,
+        layer = layui.layer,
+        upload = layui.upload,
+        $ = layui.$;
+
+		form.verify({
+            audio: function (value, item) {
+            	if(value==''){
+            		return '请选择音频';
+            	}
+            }
+        });
+
+        form.verify({
+            lrc: function (value, item) {
+                if(value==''){
+            		return '请选择lrc歌词文件';
+            	}
+            }
+        });
+
+        form.verify({
+            photo: function (value, item) {
+                if(value==''){
+            		return '请选择图片';
+            	}
+            }
+        });
+
+		/*上传图片*/
+		var uploadInst = upload.render({
+		    elem: '#test1'
+		    ,url: layui.setter.urll + '/api/upload/image'
+		    ,before: function(obj){
+		      obj.preview(function(index, file, result){
+		        $('#demo1').attr('src', result); //图片链接（base64）
+		      });
+		    }
+		    ,done: function(data){
+		    	$('#image').val(data.data);
+		    }
+		});
+
+		/*上传音频*/
+		upload.render({
+		    elem: '#upMusic'
+		   	,url:layui.setter.urll+'/api/upload/audio'
+			//,contentType:"application/x-www-form-urlencoded"
+			,contentType:"multipart/form-data"
+		    ,accept: 'audio'
+		    , auto: false
+        , choose: function (obj) {
+            obj.preview(function(index, file, result){
+				loding = layer.msg('文件上传中,请稍等哦', { icon: 16, shade: 0.3, time: 0 });
+				    //添加到audio标签中，试图获取音频长度
+						var audio = document.createElement("AUDIO");
+						audio.setAttribute('src', result);
+						$('body').append(audio);
+						//获取长度f = parseFloat("012.53");
+						setTimeout(function () {
+						    //if (audio.duration < 1200) {
+						        var durataion = audio.duration + '';
+						        var strs= new Array();
+								strs=durataion.split("."); //字符分割
+								$('#audioLength').val(strs[0]);
+						        $('#audioDemo').text(file.name);/*音频回显*/
+						        obj.upload(index, file);//文件上传
+						    //} else {
+						    //    layer.alert('请您选择时长在20分钟之内的音频',{ icon: 5 });
+						    //    return false;
+						    //}
+						}, 3000);
+			    });
+        }
+		    ,before: function(obj){
+		    	console.log("obj:"+obj);
+		  	}
+		  	,done: function(data, index, upload){
+		  		console.log("data:"+data);
+		  		console.log("data:"+data.data);
+		  		$('input[name="audioPath"]').val(data.data);
+		  		console.log($('input[name="audioPath"]').val());
+				layer.close(loding); //关闭loading
+		  	}
+		  	,error: function(index, upload){
+				layer.close(loding); //关闭loading
+		  	}
+		});
+
+		/*上传lrc文件歌词*/
+		upload.render({
+		    elem: '#upFile'
+		    ,url:layui.setter.urll+'/api/upload/lrc'
+		    ,accept: 'file'
+		    ,exts: 'lrc'
+		    ,before: function(obj){
+				loding = layer.msg('文件上传中,请稍等哦', { icon: 16, shade: 0.3, time: 0 });
+			    obj.preview(function(index, file, result){
+			      $('#lrcDemo').text(file.name);/*音频歌词回显*/
+			    });
+		  	}
+		  	,done: function(data, index, upload){
+		  		$('#lrc').val(data.data);
+				layer.close(loding); //关闭loading
+		  	}
+		  	,error: function(index, upload){
+				layer.close(loding); //关闭loading
+		  	}
+		});
+
+	});
+</script>

@@ -1,0 +1,41 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+    <!--标题-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="title" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--内容简要-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">内容简要</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <textarea type="text" name="content" style="resize:none;width: 235px;height: 100px;" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+	      	</script>
+	    </div>
+  	</div>
+  	
+  	<!--消息内容-->
+	<div class="layui-form-item" >
+	    <label class="layui-form-label">消息内容</label>
+	    <div class="layui-input-inline">
+	      	<script type="text/html" template>
+	       	 	<textarea type="text" name="messageContent" style="resize:none;width: 235px;height: 100px;" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+	      	</script>
+	    </div>
+  	</div>
+  	
+  	<!--确认-->
+  	<div class="layui-form-item">
+    	<label class="layui-form-label"></label>
+		<div class="layui-input-inline">
+      		<input type="button" lay-submit lay-filter="LAY-message-front-submit" value="确认" class="layui-btn">
+    	</div>
+  	</div>
+  	
+</div>

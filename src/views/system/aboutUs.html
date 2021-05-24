@@ -1,0 +1,166 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>系统管理</cite></a>
+        <a><cite>关于我们</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form " lay-filter="layadmin-userfront-formlist">
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                        <legend>关于我们</legend>
+                    </fieldset>
+
+                    <div class="layui-tab layui-tab-card" style="height: 450px;">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">功能介绍</li>
+                            <li>法律声明</li>
+                            <li>平台协议</li>
+                        </ul>
+                        <div class="layui-tab-content">
+
+                            <!--功能介绍-->
+                            <div class="layui-tab-item layui-show">
+                                <label class="layui-form-label">功能介绍</label>
+                                <div class="layui-input-block">
+                                    <script type="text/html" template>
+                                        <div lay-filter="LAY-filter-demo-form">
+                                            <textarea id="demo" name="introduction" style="display: none;">{{ d.params.function || '' }}</textarea>
+                                        </div>
+                                    </script>
+                                </div>
+                            </div>
+
+                            <!--法律声明-->
+                            <div class="layui-tab-item">
+                                <label class="layui-form-label">法律声明</label>
+                                <div class="layui-input-block">
+                                    <script type="text/html" template>
+                                        <div lay-filter="LAY-filter-demo-form">
+                                            <textarea id="demo2" name="law" style="display: none;">{{ d.params.legalStatement || '' }}</textarea>
+                                        </div>
+                                    </script>
+                                </div>
+                            </div>
+
+                            <!--平台协议-->
+                            <div class="layui-tab-item">
+                                <label class="layui-form-label">平台协议</label>
+                                <div class="layui-input-block">
+                                    <script type="text/html" template>
+                                        <div lay-filter="LAY-filter-demo-form">
+                                            <textarea id="demo3" name="platform" style="display: none;">{{ d.params.agreement || '' }}</textarea>
+                                        </div>
+                                    </script>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!--确认按钮-->
+                        <div class="layui-form-item" style="margin-left: 10px;">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <input type="button" lay-submit lay-filter="LAY-aboutUs-submit" value="确认" class="layui-btn">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+
+        /*功能介绍*/
+        $.ajax({
+            type: 'get',
+            method: 'get',
+            url: layui.setter.urll + "/api/admin/about/us",
+            data: {
+                'token': layui.data('data').token
+            },
+            success: function(data) {
+                $('#demo').val(data.data.function);
+                layui.use(['form', 'layedit'], function() {
+                    var $ = layui.$,
+                        form = layui.form,
+                        layedit = layui.layedit;
+                    var index = layedit.build('demo', {
+                        tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right']
+                    });
+                    $('.layui-btn').click(function() {
+                        layedit.sync(index);
+                    });
+                    form.render();
+                });
+            }
+        });
+
+        /*法律声明*/
+        $.ajax({
+            type: 'get',
+            url: layui.setter.urll + "/api/admin/about/us",
+            data: {
+                'token': layui.data('data').token
+            },
+            success: function(data) {
+                $('#demo2').val(data.data.legalStatement);
+                layui.use(['form', 'layedit'], function() {
+                    var $ = layui.$,
+                        form = layui.form,
+                        layedit = layui.layedit;
+                    //建立富文本编辑器
+                    var index = layedit.build('demo2', {
+                        tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right']
+                    });
+                    $('.layui-btn').click(function() {
+                        layedit.sync(index);
+                    });
+                    form.render();
+                });
+            }
+        });
+
+        /*平台协议*/
+        $.ajax({
+            type: 'get',
+            url: layui.setter.urll + "/api/admin/about/us",
+            data: {
+                'token': layui.data('data').token
+            },
+            success: function(data) {
+                $('#demo3').val(data.data.agreement);
+                layui.use(['form', 'layedit'], function() {
+                    var $ = layui.$,
+                        form = layui.form,
+                        layedit = layui.layedit;
+                    //建立富文本编辑器
+                    var index = layedit.build('demo3', {
+                        tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right']
+                    });
+                    $('.layui-btn').click(function() {
+                        layedit.sync(index);
+                    });
+                    form.render();
+                });
+            }
+        });
+
+    });
+</script>

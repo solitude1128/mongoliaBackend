@@ -1,0 +1,82 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>任务管理</cite></a>
+		<a><cite>任务列表</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--任务名称-->
+				<div class="layui-inline">
+				    <label class="layui-form-label">任务名称</label>
+				    <div class="layui-input-inline">
+				        <input type="text" name="name"  lay-verify="required" placeholder="请输入" style="width: 190px;" autocomplete="off" class="layui-input">
+				    </div>
+			  	</div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-task-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+			
+			<!--数据表格-->
+			<table id="LAY-task-manage" lay-filter="LAY-task-manage"></table>
+			
+			<!--编辑-->
+			<script type="text/html" id="table-task-operation">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+			</script>
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('task', layui.factory('task')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+		
+		/*监听搜索*/
+		form.on('submit(LAY-task-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			table.reload('LAY-task-manage', {
+				url: layui.setter.urll + '/api/admin/task/search',
+				method: 'get',
+				where: {
+					 token: layui.data('data').token
+					,name: field.name.replace(/\s*/g,"")  /*任务名称*/
+				},
+				page: true
+			});
+		});
+		
+		
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

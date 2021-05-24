@@ -1,0 +1,63 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+  <!--ID-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="id" value="{{ d.params.id || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--UID-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="uid" value="{{ d.params.uid || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--驳回原因-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">驳回原因</label>
+    <div class="layui-input-block">
+        <textarea id="demo"  style="display: none;" placeholder="请输入驳回原因"></textarea>
+    </div>
+  </div>
+  
+  <!--回复内容-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="reject" id="reject" lay-verify="required"  placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" id="send" lay-submit lay-filter="LAY-reject-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+  
+</div>
+
+<script>
+	layui.use(['admin', 'form', 'upload','layedit'], function(){
+	  var $ = layui.$
+	  ,form = layui.form
+	  ,upload = layui.upload;
+	  var layedit = layui.layedit;
+	  var index = layedit.build('demo', {
+		  tool: ['strong','italic','underline','del','|','left','center','right']
+	  });     
+	  $("#send").on('click',function(){
+		  	var text = layedit.getContent(index);
+		  	var content = $("#reject").val(text);
+		});
+	});
+</script>

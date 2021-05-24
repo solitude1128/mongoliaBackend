@@ -1,0 +1,240 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>内容管理</cite></a>
+        <a><cite>动态管理</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+
+    <div class="layui-card">
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+
+            <div class="layui-form-item">
+
+                <!--资讯名称-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">资讯名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <!--发布人昵称-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">发布人昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uname" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <br />
+
+                <!--发布时间-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">发布时间</label>
+                    <div class="layui-input-inline" style="width: 176px;">
+                        <input class="layui-input layui-input-inline" style="width: 186px;" name="releaseTime" id="releaseTime" placeholder="发布时间  :  yyyy-MM-dd" autocomplete="off">
+                    </div>
+                </div>
+
+                <!--是否推荐-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">是否推荐</label>
+                    <div class="layui-input-block" style="width: 186px;">
+                        <select name="isRecommend">
+							<option value="">不限</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+                    </div>
+                </div>
+                <br />
+
+                <!--是否热门-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">是否热门</label>
+                    <div class="layui-input-block" style="width: 186px;">
+                        <select name="isPopular">
+							<option value="">不限</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+                    </div>
+                </div>
+
+                <!--状态-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block" style="width: 186px;">
+                        <select name="status">
+							<option value="">不限</option>
+							<option value="1">上架</option>
+							<option value="0">下架</option>
+						</select>
+                    </div>
+                </div>
+
+                <!--搜索按钮-->
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-dynamic-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+
+            <!--添加动态-->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加动态</button>
+            </div>
+
+            <!--数据表格-->
+            <table id="LAY-dynamic-manage" lay-filter="LAY-dynamic-manage"></table>
+
+            <!--轮播图-->
+            <script type="text/html" id="imgTpl">
+                <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.urll+ "/"+d.avatar}}>
+            </script>
+
+            <!--编辑、删除-->
+            <script type="text/html" id="table-dynamic-operation">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+
+            <!--是否上架-->
+            <script type="text/html" id="isUpperShelf">
+                {{# if(d.isRel===1){ }}
+                <input type="checkbox" checked="" width="" name="open" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchUpper" lay-text="是|否"> {{# } else { }}
+                <input type="checkbox" name="close" width="" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchUpper" lay-text="是|否"> {{# } }}
+            </script>
+
+            <!--是否热门-->
+            <script type="text/html" id="isPopular">
+                {{# if(d.isHeat===1){ }}
+                <input type="checkbox" checked="" width="" name="open" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchPopular" lay-text="是|否"> {{# } else { }}
+                <input type="checkbox" name="close" width="" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchPopular" lay-text="是|否"> {{# } }}
+            </script>
+
+            <!--是否推荐-->
+            <script type="text/html" id="isRecommend">
+                {{# if(d.isRec===1){ }}
+                <input type="checkbox" checked="" name="open" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchRecommend" lay-text="是|否"> {{# } else { }}
+                <input type="checkbox" name="close" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchRecommend" lay-text="是|否"> {{# } }}
+            </script>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    alert(1)
+    layui.use('content', layui.factory('content')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        form.render();
+
+        /*日期时间范围选择*/
+        laydate.render({
+            elem: '#releaseTime',
+            type: 'datetime',
+            range: true
+        });
+
+        /*监听动态搜索*/
+        form.on('submit(LAY-dynamic-front-search)', function(data) {
+            var field = data.field;
+            console.log(field);
+            var start = field.releaseTime;
+            var strs = new Array(); //定义一数组
+            strs = start.split(" - "); //字符分割
+            table.reload('LAY-dynamic-manage', {
+                url: layui.setter.urll + '/api/admin/dynamic/search',
+                method: 'get',
+                where: {
+                    token: layui.data('data').token,
+                    title: field.name.replace(/\s*/g, "") /*资讯名称、动态标题*/ ,
+                    name: field.uname.replace(/\s*/g, "") /*发布人昵称*/ ,
+                    rec: field.isRecommend /*是否推荐*/ ,
+                    heat: field.isPopular /*是否热门*/ ,
+                    state: field.status /*状态*/ ,
+                    start: strs[0] /*开始时间*/ ,
+                    end: strs[1] /*结束时间*/
+                },
+                page: true
+            });
+        });
+
+        /*事件*/
+        var active = {
+            add: function() {
+                admin.popup({
+                    title: '添加动态',
+                    area: ['550px', '510px'],
+                    id: 'LAY-popup-user-add',
+                    success: function(layero, index) {
+                        view(this.id).render('content/addDynamic').done(function() {
+                            form.render();
+                            form.on('submit(LAY-dynamic-front-submit)', function(data) {
+                                var field = data.field;
+                                console.log(field);
+                                $.ajax({
+                                    url: layui.setter.urll + '/api/admin/dynamic/publish',
+                                    method: "post",
+                                    contentType: 'application/json;charset=UTF-8',
+                                    data: JSON.stringify({
+                                        'token': layui.data('data').token,
+                                        'title': field.title /*标题*/ ,
+                                        'tagId': field.label /*标签*/ ,
+                                        'image': field.demo2 /*图片路径*/ ,
+                                        'author': field.author /*作者简介*/ ,
+                                        'artist': field.artist /*艺人简介*/ ,
+                                        'content': field.audioPath /*音频路径*/ ,
+                                        'isRec': field.isRecommend /*是否推荐*/ ,
+                                        'isHeat': field.isPopular /*是否热门*/ ,
+                                        'isRel': field.isUpperShelf /*是否上架*/ ,
+                                        'audioTime': field.audioLength /*音频时长*/
+                                    }),
+                                    success: function(data) {
+                                        if (data.data == 1) {
+                                            layer.alert('添加成功', {
+                                                icon: 1
+                                            });
+                                            layui.table.reload('LAY-dynamic-manage');
+                                        } else {
+                                            layer.alert('添加失败，请稍后重试', {
+                                                icon: 2
+                                            });
+                                        }
+                                    },
+                                    error: function(data) {
+                                        layer.alert('添加失败，请稍后重试', {
+                                            icon: 2
+                                        });
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

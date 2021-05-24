@@ -1,0 +1,184 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>财务管理</cite></a>
+		<a><cite>支付记录</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--交易号-->
+				<div class="layui-inline">
+					<label class="layui-form-label">交易号</label>
+					<div class="layui-input-block">
+						<input type="text" name="orderId" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				
+				<!--用户-->
+				<div class="layui-inline">
+					<label class="layui-form-label">用户</label>
+					<div class="layui-input-block">
+						<input type="text" name="uname" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				
+				<!--交易时间-->
+				<div class="layui-inline">
+					<label class="layui-form-label">交易时间</label>
+					<div class="layui-input-inline" style="width: 176px;">
+						<input class="layui-input layui-input-inline" style="width: 186px;" name="transactionTime" id="transactionTime" placeholder="上传时间  :  yyyy-MM-dd" autocomplete="off">
+					</div>
+				</div>
+
+				<!--交易状态-->
+				<div class="layui-inline">
+					<label class="layui-form-label">交易状态</label>
+					<div class="layui-input-block" style="width: 186px;">
+						<select name="status">
+							<option value="">不限</option>
+							<option value="1">失败</option>
+							<option value="2">处理中</option>
+							<option value="3">成功</option>
+						</select>
+					</div>
+				</div>
+				
+				<!--交易额度-->
+				<div class="layui-inline">
+				    <label class="layui-form-label">交易额度</label>
+					    <div class="layui-input-inline" style="width: 80px;">
+					      <input type="text" name="price_min" placeholder="￥" lay-verify="money" autocomplete="off" class="layui-input">
+					    </div>
+				    <div class="layui-form-mid">-</div>
+				    <div class="layui-input-inline" style="width: 80px;">
+				      <input type="text" name="price_max" placeholder="￥" lay-verify="money" autocomplete="off" class="layui-input">
+				    </div>
+				</div>
+				
+				<!--支付方式-->
+				<div class="layui-inline">
+					<label class="layui-form-label">支付方式</label>
+					<div class="layui-input-block" style="width: 186px;">
+						<select name="payMethod">
+							<option value="">不限</option>
+							<option value="2">微信</option>
+							<option value="1">支付宝</option>
+							<option value="3">积分</option>
+						</select>
+					</div>
+				</div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline" style="margin-left: 30px;">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-finance-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+
+			<!--数据表格-->
+			<table id="LAY-finance-manage" lay-filter="LAY-finance-manage"></table>
+			
+			<!--通过、驳回-->
+			<script type="text/html" id="table-dynamic-operation">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="pass">通过</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="reject">驳回</a>
+			</script>
+			<script type="text/html" id="type">
+				{{#  if(d.state===1){ }}
+			    	<button class="layui-btn layui-btn-warm layui-btn-xs">失败</button>
+			    {{#  } else if(d.state===2){ }}
+			    	<button class="layui-btn layui-btn-normal layui-btn-xs">处理中</button>
+			    {{#  } else if(d.state===3){ }}
+			    	<button class="layui-btn layui-btn-xs">成功</button>
+			    {{#  } else{ }}
+			    	<button class="layui-btn layui-btn-danger layui-btn-xs">未支付</a>
+			    {{#  } }}
+			</script>
+			
+			<script type="text/html" id="payType">
+				{{#  if(d.payType===1){ }}
+			    	<button class="layui-btn layui-btn-xs">支付宝</button>
+			    {{#  } else if(d.payType===2){ }}
+			    	<button class="layui-btn layui-btn-normal layui-btn-xs">微信</button>
+			    {{#  } else if(d.payType===3){ }}
+			    	<button class="layui-btn layui-btn-warm layui-btn-xs">积分</button>
+			    {{#  } else{ }}
+			    	<button class="layui-btn layui-btn-danger layui-btn-xs">未支付</a>
+			    {{#  } }}
+			</script>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('finance', layui.factory('finance')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+		
+		/*时间选择器*/
+		laydate.render({
+			elem: '#transactionTime',
+			type: 'datetime',
+			range: true
+		});
+		  
+		/*监听搜索*/
+		form.on('submit(LAY-finance-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			var transactionTime = field.transactionTime;
+			var tt = transactionTime.split(" - ");
+			var price_min = field.price_min.replace(/\s*/g,"")	;
+			var price_max = field.price_max.replace(/\s*/g,"")	;
+			table.reload('LAY-finance-manage', {
+				url: layui.setter.urll + '/api/admin/order/search',
+				method: 'get',
+				where: {
+					title: field.orderId.replace(/\s*/g,"")			/*交易号*/
+					,name:field.uname.replace(/\s*/g,"")			/*用户昵称*/
+					,start:tt[0]									/*交易起始时间*/
+					,end:tt[1]										/*交易结束时间*/
+					,state: field.status							/*交易状态*/
+					,range: price_min+","+price_max				/*交易额度*/
+					,flag: field.payMethod							/*支付方式*/
+				},
+				page: true
+			});
+		});
+		
+		form.verify({
+            money: function (value, item) {
+            	if(value<0){
+            		return '请填写有效数字';
+            	}
+            }
+        });
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

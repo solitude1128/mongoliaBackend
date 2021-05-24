@@ -1,0 +1,167 @@
+<script type="text/html" template>
+
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/login.css?v={{ layui.admin.v }}-1" media="all">
+
+</script>
+
+
+
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+
+	<div class="layadmin-user-login-main">
+
+		<div class="layadmin-user-login-box layadmin-user-login-header" style="margin-bottom: 35px">
+
+			<h2>蓝色草原后台管理系统</h2>
+
+
+		</div>
+
+		<div class="layadmin-user-login-box layadmin-user-login-body layui-form" style="width: 400px;margin: 0 auto">
+
+			<div class="layui-form-item">
+
+				<p class="sTitle"><span>欢迎登录</span>蓝色草原后台管理系统</p>
+
+			</div>
+
+			<div class="layui-form-item">
+
+				<label class="layadmin-user-login-icon layui-icon layui-icon-username"
+					for="LAY-user-login-username"></label>
+
+				<input type="text" name="username" id="LAY-user-login-username" lay-verify="required" placeholder="用户名"
+					class="layui-input">
+
+			</div>
+
+			<div class="layui-form-item">
+
+				<label class="layadmin-user-login-icon layui-icon layui-icon-password"
+					for="LAY-user-login-password"></label>
+
+				<input type="password" name="password" id="LAY-user-login-password" lay-verify="required"
+					placeholder="密码" class="layui-input">
+
+			</div>
+
+			<div class="layui-form-item">
+
+				<button id="Button" class="layui-btn layui-btn-fluid" lay-submit lay-filter="LAY-user-login-submit"
+					style="margin-top: 20px">登 录</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+</div>
+
+
+
+<script>
+
+	layui.use(['admin', 'form', 'user', 'cookie'], function () {
+		var $ = layui.$
+			, setter = layui.setter
+			, admin = layui.admin
+			, form = layui.form
+			, cookie = layui.cookie
+			, router = layui.router()
+			, search = router.search;
+		form.render();
+		//提交
+		form.on('submit(LAY-user-login-submit)', function (obj) {
+
+			$.ajax({
+				url: layui.setter.urll + '/api/admin/login',
+				type: 'POST',
+				crossDomain: true,
+				dataType: 'JSON',
+				data: JSON.stringify({
+					"username": obj.field.username,
+					"password": obj.field.password
+				}),
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+				},
+				success: function (data) {
+					if (data.code === 404) {
+						layer.alert(data.data, { icon: 5 });
+					} else if (data.code === 402) {
+						layer.alert(data.data, { icon: 5 });
+					} else {
+						//		            	layui.data(setter.token, {
+						//			              key: 'token'
+						//			              , value: data.data.token
+						//			            });
+						layui.data(setter.tableName, {
+							key: setter.request.tokenName
+							, value: data.data.token
+						});
+
+						//						layui.setter.token = data.data.token;
+						//
+						//          			layui.setter.uid = data.data.id;
+
+						layui.data('data', {
+							key: 'token'
+							, value: data.data.token
+						});
+						
+						if (data.data.radioId != null) {
+							layui.data('data', {
+								key: 'rid'
+								, value: data.data.radioId
+							});
+						}else{
+							layui.data('data', {
+								key: 'rid'
+								, value: -1
+							});
+						}
+
+						layui.data('data', {
+							key: 'uid'
+							, value: data.data.id
+						});
+
+						layui.data('data', {
+							key: 'username'
+							, value: obj.field.username
+						});
+
+						$.cookie('uid', data.data.id, { expires: 1 });
+
+						//登入成功的提示与跳转
+						layer.msg('登录成功', {
+
+							offset: '15px'
+
+							, icon: 1
+
+							, time: 1000
+
+						}, function () {
+
+							location.hash = search.redirect ? decodeURIComponent(search.redirect) : '/';
+
+						});
+					}
+				}
+			});
+		});
+	});
+
+	//按下回车触发登录
+	document.onkeydown = function () {
+		if (event.keyCode == 13) {
+			document.getElementById("Button").click();
+			return false;
+		}
+	}
+
+</script>

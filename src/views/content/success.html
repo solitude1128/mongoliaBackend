@@ -1,0 +1,45 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+    <!--举报动态的id-->
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="hidden" name="id" value="{{ d.params.id || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <!-- 举报人的uid -->
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="hidden" name="whistleUid" value="{{ d.params.whistleUid || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--举报描述-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">内容:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="utterance" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <!--确认-->
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-report-front-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+
+</div>
+
+<script>
+    layui.data.groups = function(d) {
+        layui.use(['admin', 'form', 'jquery', 'layer'], function() {
+            var $ = layui.$,
+                jquery = layui.jquery,
+                form = layui.form;
+        })
+    };
+</script>

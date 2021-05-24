@@ -1,0 +1,123 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>审核管理</cite></a>
+		<a><cite>动态评论审核列表</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+				<!--用户昵称-->
+				<div class="layui-inline">
+					<label class="layui-form-label">用户昵称</label>
+					<div class="layui-input-block">
+						<input type="text" name="uname" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				
+				<!--手机号-->
+				<div class="layui-inline">
+					<label class="layui-form-label">手机号</label>
+					<div class="layui-input-block">
+						<input type="text" name="phone" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				
+				<!--状态-->
+		        <div class="layui-inline">
+		          <label class="layui-form-label">状态</label>
+		          <div class="layui-input-block" style="width: 186px;">
+		            <select name="state">
+		              <option value="">不限</option>
+		              <option value="1">通过</option>
+		              <option value="-1">未通过</option>
+		              <option value="0">待审核</option>
+		            </select>
+		          </div>
+	        	</div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-examine-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+
+			<!--数据表格-->
+			<table id="LAY-examine-manage-dynamicEvaluation" lay-filter="LAY-examine-manage-dynamicEvaluation"></table>
+			
+			<!--通过、驳回-->
+			<script type="text/html" id="table-dynamic-operation">
+				{{#  if(d.auditStatus===0){ }}
+					<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="pass">通过</a>
+					<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="reject">驳回</a>
+				{{#  } else{ }}
+					<a class="layui-btn layui-btn-normal layui-btn-disabled layui-btn-xs" >通过</a>
+					<a class="layui-btn layui-btn-danger layui-btn-disabled layui-btn-xs" >驳回</a>
+				{{#  } }}
+				<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete">删除</i></a>
+			</script>
+			
+			<script type="text/html" id="examineStatus">
+				{{#  if(d.auditStatus===0){ }}
+			    	<button class="layui-btn layui-btn-normal layui-btn-xs">待审核</a>
+			    {{#  } else if(d.auditStatus===1){ }}
+			    	<button class="layui-btn layui-btn-xs">通过</button>
+			    {{#  } else{ }}
+			    	<button class="layui-btn layui-btn-danger layui-btn-xs">未通过</a>
+			    {{#  } }}
+			</script>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('examine', layui.factory('examine')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+			
+		/*监听搜索*/
+		form.on('submit(LAY-examine-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			if(field.uname==null && field.phone==null && field.state==null){
+				return false;
+			}
+			table.reload('LAY-examine-manage-dynamicEvaluation', {
+				url: layui.setter.ajaxUrl + '/api/admin/comment/dynamic/search',
+				method: 'get',
+				where: {
+					 token: layui.data('data').token
+					,name: field.uname								/*昵称*/
+					,phone: field.phone.replace(/\s*/g,"")			/*手机号*/
+					,state: field.state								/*状态*/
+				},
+				page: true
+			});
+		});
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

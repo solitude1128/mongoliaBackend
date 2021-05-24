@@ -1,0 +1,29 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+    <!--消息内容-->
+    <div class="layui-form-item">
+        <script type="text/html" template>
+            <a class="layui-btn" lay-href="user/playHistory/id={{d.params.uid}}">历史播放记录列表</a>
+            <a class="layui-btn" lay-href="user/loginHistory/id={{d.params.uid}}">登录时间列表</a>
+            <a class="layui-btn" lay-href="user/likeList/id={{d.params.uid}}">点赞列表</a>
+            <a class="layui-btn" lay-href="user/commentList/id={{d.params.uid}}">评论列表</a>
+            <a class="layui-btn" lay-href="user/shareList/id={{d.params.uid}}">转发列表</a>
+            <a class="layui-btn" lay-href="user/playHistory/id={{d.params.uid}}">购买音频列表</a>
+            <a class="layui-btn" lay-href="user/downLoadList/id={{d.params.uid}}">下载列表</a>
+        </script>
+    </div>
+
+</div>
+
+<style>
+    .layui-input-inline {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: start;
+    }
+    
+    .layui-btn {
+        margin-bottom: 10px;
+    }
+</style>

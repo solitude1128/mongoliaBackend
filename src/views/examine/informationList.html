@@ -1,0 +1,109 @@
+<title>网站用户</title>
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>审核管理</cite></a>
+		<a><cite>信息认证审核列表</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--ID-->
+				<div class="layui-inline">
+					<label class="layui-form-label">用户名</label>
+					<div class="layui-input-block">
+						<input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				
+				<!--ID-->
+				<div class="layui-inline">
+					<label class="layui-form-label">姓名</label>
+					<div class="layui-input-block">
+						<input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-examine-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+
+			<!--数据表格-->
+			<table id="LAY-examine-manage-information" lay-filter="LAY-examine-manage-information"></table>
+			
+			<!--通过、驳回-->
+			<script type="text/html" id="table-dynamic-operation">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="pass">通过</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="reject">驳回</a>
+			</script>
+			
+			<!--审核状态-->
+			<script type="text/html" id="examineStatus">
+				{{#  if(d.auditState===0){ }}
+			    	<button class="layui-btn layui-btn-normal layui-btn-xs">未审核</a>
+			    {{#  } else if(d.auditState===1){ }}
+			    	<button class="layui-btn layui-btn-xs">通过</button>
+			    {{#  } else{ }}
+			    	<button class="layui-btn layui-btn-danger layui-btn-xs">驳回</button>
+			    {{#  } }}
+			</script>
+			
+			<!--操作时间-->
+			<script type="text/html" id="updateTime">
+				{{#  if(d.updateTime==="" || d.updateTime==null){ }}
+					暂无
+			    {{#  } else{ }}
+			    	{{d.updateTime}}
+			    {{#  } }}
+			</script>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('examine', layui.factory('examine')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+		  
+		/*监听搜索*/
+		form.on('submit(LAY-examine-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			table.reload('LAY-examine-manage-information', {
+				url: layui.setter.urll + '/api/admin/user/audit/search',
+				method: 'get',
+				where: {
+					 token: layui.data('data').token
+					,uid: field.id									/*id*/
+					,phone: field.phone.replace(/\s*/g,"")			/*手机号*/
+				},
+				page: true
+			});
+		});
+
+	});
+</script>

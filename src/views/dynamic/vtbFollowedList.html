@@ -1,0 +1,80 @@
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>音频目录</cite></a>
+		<a><cite>评论章节</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<!--数据表格-->
+			<table id="vtbFollowedList" lay-filter="vtbFollowedList"></table>
+			<!--编辑、删除-->
+			<!-- <script type="text/html" id="table-edit-operation">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+			</script> -->
+
+			<!--评论类型-->
+			<script type="text/html" id="type">
+				{{#  if(d.flag===1){ }}
+				   	<button class="layui-btn layui-btn-xs">音频目录</button>
+				   {{#  } else if(d.flag===2){ }}
+				   	<button class="layui-btn layui-btn-warm layui-btn-xs">音频</button>
+				   {{#  } else{ }}
+				   	<button class="layui-btn layui-btn-normal layui-btn-xs">动态</a>
+				   {{#  } }}
+			</script>
+			<!--删除-->
+			<script type="text/html" id="table-comment-operation">
+				<a class="layui-btn layui-btn-xs" lay-event="replyALL"><i class="layui-icon"></i>全部回复</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
+					><i class="layui-icon layui-icon-delete"></i>删除并封ID</a
+				>
+				<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="delComment"
+					><i class="layui-icon layui-icon-delete"></i>删除评论</a
+				>
+			</script>
+		</div>
+	</div>
+</div>
+
+<script>
+	var cookie = location.href;
+	function getCookie(name) {
+		var reg = new RegExp(name + "=([^g]*)(;|$)", "i");
+		var r = cookie.match(reg);
+		if (r != null) {
+			return r[1];
+		}
+		return null;
+	}
+	var id = getCookie("id");
+	console.log(id); /*点击编辑音频的时候传递的值:目录的id*/
+	layui.use("dynamic", layui.factory("dynamic")).use(["admin", "useradmin", "table", "laydate", "form"], function () {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+		form.render();
+
+		/*点击查看大图*/
+		$("body").on("click", ".img", function () {
+			layer.open({
+				type: 1,
+				title: false,
+				closeBtn: 0,
+				area: "auto",
+				maxHeight: 700,
+				maxWidth: 700,
+				skin: "layui-layer-nobg", //没有背景色
+				shadeClose: true,
+				content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr("src") + '"/>',
+			});
+		});
+	});
+</script>

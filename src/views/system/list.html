@@ -1,0 +1,104 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>消息管理</cite></a>
+		<a><cite>消息列表</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--标题-->
+				<div class="layui-inline">
+					<label class="layui-form-label">标题</label>
+					<div class="layui-input-block">
+						<input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<!--发布时间-->
+				<div class="layui-inline">
+					<label class="layui-form-label">发布时间</label>
+					<div class="layui-input-inline" style="width: 176px;">
+						<input class="layui-input layui-input-inline" style="width: 186px;" name="releaseTime" id="releaseTime" placeholder="上传时间  :  yyyy-MM-dd" autocomplete="off">
+					</div>
+				</div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-message-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+			<!--数据表格-->
+			<table id="LAY-message-manage" lay-filter="LAY-message-manage"></table>
+			
+			<!--接收用户-->
+		    <script type="text/html" id="receiver"> 
+		      	{{# if(d.receiver==0){ }}
+			        	<button class="layui-btn layui-btn-xs">全部用户</button>
+			  	{{#  } else { }}
+			        	<button class="layui-btn layui-btn-normal layui-btn-xs">部分用户</a>
+			  	{{# } }}
+		    </script> 
+		    
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('message', layui.factory('message')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render(null,'LAY-message-manage');
+		
+		/*日期时间范围选择*/
+		laydate.render({
+			elem: '#releaseTime',
+			type: 'datetime',
+			range: true
+		});
+		  
+		/*监听搜索消息*/
+		form.on('submit(LAY-message-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			var releaseTime = field.releaseTime;
+			var rt = releaseTime.split(" - ");
+			table.reload('LAY-message-manage', {
+				url: layui.setter.urll + '/api/admin/message/search',
+				method: 'get',
+				where: {
+					 token: layui.data('data').token
+					,title: field.title.replace(/\s*/g,"")		/*标题*/
+					,start:rt[0]								/*发布起始时间*/
+					,end:rt[1]									/*发布结束时间*/
+				},
+				page: true
+			});
+		});
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

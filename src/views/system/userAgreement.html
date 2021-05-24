@@ -1,0 +1,74 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>系统设置</cite></a>
+    <a><cite>用户协议</cite></a>
+  </div>
+</div>
+
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-card-body"  style="height: 550px;">
+	  	<div class="layui-form-item">
+	        <label class="layui-form-label">用户协议</label>
+	        <div class="layui-input-block">
+	            <script type="text/html" template>
+	                <div lay-filter="LAY-filter-demo-form">
+	                    <textarea id="demo" name="userText" style="display: none;" placeholder="请输入协议内容"></textarea>
+	                </div>
+	            </script>
+	        </div>
+	    </div>
+		  
+		  <!--确认按钮的内容-->
+		  <div class="layui-form-item">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-inline">
+		      <input type="button" lay-submit lay-filter="LAY-system-front-submit"  value="确认" class="layui-btn">
+		    </div>
+		  </div>
+  
+		</div>
+	</div>
+</div>
+
+<script>
+	layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table','laydate','form'], function(){
+		var $ = layui.$
+		,admin = layui.admin
+		,view = layui.view
+		,table = layui.table
+		,laydate = layui.laydate
+		,form = layui.form;
+		
+        $.ajax({
+            type: 'get',
+            url: layui.setter.urll+'/api/admin/about/us',
+            data:{
+      			'token': layui.data('data').token
+          	},
+            success: function (data) {
+                $('#demo').val(data.data.agreement);
+                layui.use(['form','layedit'], function() {
+                    var $ = layui.$
+                        , form = layui.form
+                        , layedit = layui.layedit;
+                    //建立富文本编辑器
+                    var index = layedit.build('demo', {
+                        tool: ['strong','italic','underline','del','|','left','center','right']
+                        ,height:450
+                    });
+                    $('.layui-btn').click(function () {
+                        layedit.sync(index);
+                    });
+                    form.render();
+                });
+
+            }
+        });
+
+        form.render()
+    });
+</script>

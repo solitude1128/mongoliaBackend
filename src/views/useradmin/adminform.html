@@ -1,0 +1,85 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-admin" style="padding: 20px 30px 0 0;">
+	
+	<!--id-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="id" value="{{ d.params.id || '' }}" lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+	<!--管理员名称-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">管理员名称</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="name" value="{{ d.params.username || '' }}" lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--角色-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">角色</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+      	<input type="hidden" id="rolesId" value="{{d.params.rolesId}}" />
+        <select name="role" id="role">
+        </select>
+      </script>
+    </div>
+  </div>
+  
+  
+  <!--密码-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">密码</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="password" name="pwd" value="" placeholder="请输入密码" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-user-back-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	layui.use(['layer', 'form', 'table', 'layedit', 'laydate', 'jquery'], function () {
+        var form = layui.form,
+            laydate = layui.laydate,
+            layer = layui.layer,
+            $ = layui.jquery;
+			 
+	    /*加载角色下拉框*/
+	  	$.ajax({
+		    url:layui.setter.urll+'/api/admin/auth/role/list'
+		    ,method:"get"
+		    ,data: {
+	      		'token': layui.data('data').token
+	      	}
+		    ,success:function(result){
+		        var list = result["data"];
+		        var server = document.getElementById("role");
+		        for(var p in list){
+		            var option = document.createElement("option");
+		            option.setAttribute("value",list[p].id);
+		            option.innerText=list[p].rolesName;
+		            server.appendChild(option);
+		            form.render("select");
+				} 
+				var classId = 'dd[lay-value=' + $('#rolesId').val() + ']';
+		        $("#role").next().find('dl').find(classId).click();
+		        form.render('select');
+		    } 
+		})
+	});
+</script>

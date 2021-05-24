@@ -1,0 +1,76 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+    <!--举报动态的id-->
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="hidden" name="id" value="{{ d.params.id || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--举报描述-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">举报描述</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="describe" readonly="readonly" value="{{ d.params.describe || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--举报图片-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">举报图片</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template lay-done="layui.data.groups(d);">
+                <input type="hidden" id="reportImage" name="reportImage" value="{{d.params.image}}" />
+                <div id="ri"></div>
+            </script>
+        </div>
+
+        <!--举报动态-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">举报动态</label>
+            <div class="layui-input-inline" style="margin-top: 8px;">
+                <script type="text/html" template>
+                    <a lay-href="content/dynamicList" style="color: blue;">{{d.params.dynamicName}}</a>
+                </script>
+            </div>
+        </div>
+
+        <!--确认-->
+        <!-- <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-report-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div> -->
+
+    </div>
+
+    <script>
+        layui.data.groups = function(d) {
+            layui.use(['admin', 'form', 'jquery', 'layer'], function() {
+                var $ = layui.$,
+                    jquery = layui.jquery,
+                    form = layui.form;
+                (function() {
+                    var reportImage = $("#reportImage").val();
+                    if (reportImage == "null") {
+                        $('#ri').append('<span style="position: absolute;top: 8px;">暂无图片</span>');
+                        return false;
+                    }
+                    console.log(reportImage);
+                    var reportImageList = reportImage.split(",");
+                    var path = layui.setter.urll;
+
+                    console.log(reportImageList);
+                    for (var i = 0; i < reportImageList.length; i++) {
+                        var ri = '<img class="img"  style="display: inline-block;margin-right:20px;border:1px solid gray; width: 30px; height: 30px;" src="' + path + reportImageList[i] + '">';
+                        $('#ri').append(ri);
+                        form.render();
+                    }
+                })();
+            })
+        };
+    </script>

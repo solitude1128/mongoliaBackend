@@ -1,0 +1,84 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>系统管理</cite></a>
+		<a><cite>联系我们</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--电话-->
+				<div class="layui-inline">
+					<label class="layui-form-label">电话</label>
+					<div class="layui-input-block">
+						<input type="text" name="tel" id="tel" placeholder="请输入" lay-verify="phone" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<br />
+				<!--网址-->
+				<div class="layui-inline">
+					<label class="layui-form-label">网址</label>
+					<div class="layui-input-block" style="width: 176px;">
+						<input class="layui-input layui-input-inline" lay-verify="url"  style="width: 186px;" name="url" id="url" placeholder="请输入" autocomplete="off">
+					</div>
+				</div>
+				
+				<!--邮箱-->
+				<br />
+				<div class="layui-inline">
+		          <label class="layui-form-label">邮箱</label>
+		          <div class="layui-input-block">
+		            <input type="text" name="email" id="email" placeholder="请输入" lay-verify="email" autocomplete="off" class="layui-input">
+		          </div>
+		        </div>
+
+				<!--搜索按钮-->
+				<br />
+				<div class="layui-inline" style="margin-left: 110px;">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-contactUs-front-submit">
+			           	确定
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
+</div>
+
+<script>
+	layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+			
+	        $.ajax({
+	            type: 'get',
+	            url: layui.setter.urll+"/api/admin/about/contact",
+	            data:{
+      				'token': layui.data('data').token
+          		},
+	            success: function (data) {
+	                $('#tel').val(data.data.phone);
+	                $('#url').val(data.data.url);
+	                $('#email').val(data.data.email);
+	            }
+	            ,error:function(data){
+	            	layer.alert('操作失败',{icon:2})
+	            }
+	        });
+	});
+</script>

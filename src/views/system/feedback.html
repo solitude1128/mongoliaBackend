@@ -1,0 +1,116 @@
+  
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>系统管理</cite></a>
+    <a><cite>意见反馈</cite></a>
+  </div>
+</div>
+
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+      <div class="layui-form-item">
+      	
+      	<!--ID-->
+        <div class="layui-inline">
+          <label class="layui-form-label">用户ID</label>
+          <div class="layui-input-block">
+            <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+          </div>
+        </div>
+        
+        <!--反馈时间-->
+        <div class="layui-inline">
+          <label class="layui-form-label">反馈时间</label>
+          <div class="layui-input-inline" style="width: 176px;">
+            <input class="layui-input layui-input-inline" style="width: 186px;" name="backTime" id="backTime" placeholder="起始时间  :  yyyy-MM-dd" autocomplete="off" >
+          </div>
+        </div>
+        
+        <!--状态-->
+        <div class="layui-inline">
+          <label class="layui-form-label">状态</label>
+          <div class="layui-input-block" style="width: 186px;">
+            <select name="status">
+              <option value="">不限</option>
+              <option value="1">已回复</option>
+              <option value="0">未回复</option>
+            </select>
+          </div>
+        </div>
+        
+        <!--搜索-->
+        <div class="layui-inline">
+          <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-system-front-search">
+            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+          </button>
+        </div>
+        
+      </div>
+    </div>
+    
+    <div class="layui-card-body">
+      
+      <table id="LAY-system-manage" lay-filter="LAY-system-manage"></table>
+      
+      <!--状态-->
+      <script type="text/html" id="Status">
+		    {{# if(d.state==0){ }}
+		         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="frozen">未回复</a>
+		    {{#  } else { }}
+		        <a class="layui-btn  layui-btn-xs" lay-event="frozen">已回复</a>
+		    {{# } }}
+	  	</script>
+	  
+		  <!--操作-->
+		  <script type="text/html" id="table-system-webuser">
+		    {{# if(d.state==0){ }}
+		        <a class="layui-btn  layui-btn-xs" lay-event="reply"><i class="layui-icon layui-icon-reply-fill"></i>回复</a>
+				{{# } }}
+		    		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+		  </script>
+	  
+    </div>
+  </div>
+</div>
+
+<script>
+	layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table','laydate','form'], function(){
+  	var $ = layui.$
+  			,admin = layui.admin
+  			,view = layui.view
+  			,table = layui.table
+  			,laydate = layui.laydate
+  			,form = layui.form;
+  
+  	form.render();
+	  /*日期时间范围选择*/
+		laydate.render({ 
+		  elem: '#backTime'
+		  ,type: 'datetime'
+		  ,range: true
+		});
+
+	  /*监听意见反馈搜索*/
+	  form.on('submit(LAY-system-front-search)', function(data){
+	    var field = data.field;
+	    console.log(field);
+	    var backTime = field.backTime;
+	    var bt = backTime.split(" - ");
+	    table.reload('LAY-system-manage', {
+		    	url:layui.setter.urll+'/api/admin/feedback/search'
+		    	,method:'get'
+		      ,where: {
+		        	 token: layui.data('data').token
+		          ,uid:field.id.replace(/\s*/g,"")			/*id*/
+		          ,start:bt[0]													/*反馈起始时间*/
+		          ,end:bt[1]														/*反馈结束时间*/
+		          ,state:field.status										/*状态*/
+		      }
+	       ,page: true
+	    });
+	  });
+	
+	});
+</script>

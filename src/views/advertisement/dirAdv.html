@@ -1,0 +1,207 @@
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>广告管理</cite></a>
+		<a><cite>目录广告管理</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div
+			class="layui-form layui-card-header layuiadmin-card-header-auto"
+			lay-filter="layadmin-userfront-formlist"
+		></div>
+
+		<div class="layui-card-body">
+			<!--添加轮播图-->
+			<div style="padding-bottom: 10px">
+				<button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加目录广告</button>
+			</div>
+
+			<!--数据表格-->
+			<table id="LAY-audioDirAdv-manage" lay-filter="LAY-audioDirAdv-manage"></table>
+
+			<!--轮播图-->
+			<script type="text/html" id="imgTpl">
+				<img class="img" style="display: inline-block; width: 30px; height: 30px;"
+				src={{layui.setter.imgUrl+"/"+d.imgUrl}}>
+			</script>
+
+			<!--编辑、删除-->
+			<script type="text/html" id="table-audioAdv-operation">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"
+					><i class="layui-icon layui-icon-edit"></i>编辑</a
+				>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
+					><i class="layui-icon layui-icon-delete"></i>删除</a
+				>
+			</script>
+
+			<!--上架、下架-->
+			<script type="text/html" id="topLowerStatus">
+				{{# if(d.imgState===1){ }}
+				<input
+					type="checkbox"
+					checked=""
+					name="open"
+					switch_id="{{d.id}}"
+					lay-skin="switch"
+					lay-filter="switchTest"
+					lay-text="上架|下架"
+				/>
+				{{# } else { }}
+				<input
+					type="checkbox"
+					name="close"
+					switch_id="{{d.id}}"
+					lay-skin="switch"
+					lay-filter="switchTest"
+					lay-text="上架|下架"
+				/>
+				{{# } }}
+			</script>
+
+			<!--跳转音频-->
+			<script type="text/html" id="tPath">
+				<a href="{{ d.advertPath}}" target="_blank">{{ d.advertPath}}</a>
+			</script>
+			<script type="text/html" id="tBgColor">
+				<div style="background-color: {{ d.backColor }};height:100%"></div>
+			</script>
+		</div>
+	</div>
+</div>
+
+<script>
+	layui
+		.use("advertisement", layui.factory("advertisement"))
+		.use(["admin", "useradmin", "table", "laydate", "form"], function () {
+			var $ = layui.$,
+				admin = layui.admin,
+				view = layui.view,
+				table = layui.table,
+				laydate = layui.laydate,
+				form = layui.form;
+			form.render();
+
+			/*日期时间范围选择*/
+			laydate.render({
+				elem: "#uploadTime",
+				type: "datetime",
+				range: true,
+			});
+
+			/*点击查看大图*/
+			$("body").on("click", ".img", function () {
+				layer.open({
+					type: 1,
+					title: false,
+					closeBtn: 0,
+					area: "auto",
+					maxHeight: 600,
+					maxWidth: 600,
+					skin: "layui-layer-nobg",
+					shadeClose: true,
+					content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr("src") + '"/>',
+				});
+				e.stopPropagation();
+			});
+
+			/*监听搜索*/
+			form.on("submit(LAY-audioAdv-front-search)", function (data) {
+				console.log(data);
+				var field = data.field;
+				var upTime = field.uploadTime;
+				var strs = new Array();
+				if (upTime != null) {
+					strs = upTime.split(" - ");
+				}
+				table.reload("LAY-audioAdv-manage", {
+					url: layui.setter.urll + "/api/admin/banner/search",
+					method: "get",
+					where: {
+						token: layui.data("data").token,
+						name: field.name.replace(/\s*/g, ""),
+						start: strs[0],
+						end: strs[1],
+						state: field.status.replace(/\s*/g, ""),
+					},
+					page: true,
+				});
+			});
+			/*事件*/
+			var active = {
+				add: function () {
+					admin.popup({
+						title: "添加音频目录广告",
+						area: ["450px", "600px"],
+						id: "LAY-popup-user-add",
+						success: function (layero, index) {
+							view(this.id)
+								.render("advertisement/addDirAdv")
+								.done(function () {
+									form.render();
+									//监听提交
+									form.on("submit(LAY-startAppAdv-front-submit)", function (data) {
+										var field = data.field;
+										console.log(field);
+										$.ajax({
+											url: layui.setter.urll + "/api/admin/advert/insertAdvert?token=" + layui.data("data").token,
+											method: "post",
+											contentType: "application/json;charset=UTF-8",
+											data: JSON.stringify(
+												Object.assign(
+													{
+														token: layui.data("data").token,
+														classif: 1,
+													},
+													field
+												)
+											),
+											success: function (data) {
+												if (data.data) {
+													$.ajax({
+														url: layui.setter.urll + "/api/admin/advert/releaseAdvert",
+														method: "post",
+														contentType: "application/json;charset=UTF-8",
+														data: JSON.stringify({
+															token: layui.data("data").token,
+															audioId: field.imgAddress,
+															flag: 0,
+															id: data.data.id,
+														}),
+														success: function (data) {
+															layer.alert("已添加", {icon: 1});
+															layui.table.reload("LAY-audioAdv-manage");
+														},
+													});
+												} else {
+													layer.alert("添加失败，请稍后重试", {icon: 2});
+												}
+												if (data.code == 403) {
+													layer.closeAll();
+													admin.exit();
+													setTimeout(function () {
+														layer.alert("此账号已在别处登录,请重新登录！", {icon: 5});
+													}, 666);
+												}
+											},
+											error: function (data) {
+												layer.alert("添加失败，请稍后重试");
+											},
+										});
+										layer.close(index);
+									});
+								});
+						},
+					});
+				},
+			};
+
+			$(".layui-btn.layuiadmin-btn-useradmin").on("click", function () {
+				var type = $(this).data("type");
+				active[type] ? active[type].call(this) : "";
+			});
+		});
+</script>

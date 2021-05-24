@@ -1,0 +1,207 @@
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>动态管理</cite></a>
+		<a><cite>音频章节</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			<div class="layui-form-item">
+				<!--热门设定依据-->
+				<div class="layui-inline">
+					<label class="layui-form-label">热门设定依据</label>
+					<div class="layui-input-block" style="width: 186px">
+						<input type="text" name="hotDetermine" type="checkbox" value="播放次数">
+						<input type="text" name="hotDetermine" type="checkbox" value="评论次数">
+						<input type="text" name="hotDetermine" type="checkbox" value="点赞次数">
+					</div>
+				</div>
+				<!--确定按钮-->
+				<div class="layui-inline" style="margin-left: 25px">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-audio-front-search">
+						<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="layui-card-body">
+			<!--数据表格-->
+			<table id="hotManage" lay-filter="hotManage"></table>
+
+			<!--音频播放器-->
+			<script type="text/html" id="audioPath">
+				<audio controls="controls" style="width: 300px;height: 30px;" src="{{layui.setter.urll+d.audioPath}}"></audio>
+			</script>
+
+			<!--音频图片-->
+			<script type="text/html" id="audioImage">
+				<img
+					class="img"
+					style="display: inline-block; width: 30px; height: 30px;"
+					src="{{layui.setter.urll+d.image}}"
+				/>
+			</script>
+
+			<!--是否上架-->
+			<script type="text/html" id="isGround">
+				{{# if(d.ifPay===1){ }}
+				<input
+					type="checkbox"
+					checked=""
+					name="open"
+					switch_id="{{d.id}}"
+					lay-skin="switch"
+					lay-filter="switchPay"
+					lay-text="是|否"
+				/>
+				{{# } else { }}
+				<input
+					type="checkbox"
+					name="close"
+					switch_id="{{d.id}}"
+					lay-skin="switch"
+					lay-filter="switchPay"
+					lay-text="是|否"
+				/>
+				{{# } }}
+			</script>
+			<!--是否热门-->
+			<script type="text/html" id="isHot">
+				{{# if(d.ifPay===1){ }}
+				<input
+					type="checkbox"
+					checked=""
+					name="open"
+					switch_id="{{d.id}}"
+					lay-skin="switch"
+					lay-filter="switchPay"
+					lay-text="是|否"
+				/>
+				{{# } else { }}
+				<input
+					type="checkbox"
+					name="close"
+					switch_id="{{d.id}}"
+					lay-skin="switch"
+					lay-filter="switchPay"
+					lay-text="是|否"
+				/>
+				{{# } }}
+			</script>
+
+			<!--编辑、删除-->
+			<script type="text/html" id="table-edit-operation">
+				{{# if(d.lock){ }}
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
+					><i class="layui-icon layui-icon-lock"></i>冻结音频</a
+				>
+				{{# }else{ }}
+				<a class="layui-btn layui-btn-xs" lay-event="del"><i class="layui-icon"></i>解冻音频</a>
+				{{# } }}
+			</script>
+		</div>
+	</div>
+</div>
+
+<script>
+	var cookie = location.href;
+	function getCookie(name) {
+		var reg = new RegExp(name + "=([^g]*)(;|$)", "i");
+		var r = cookie.match(reg);
+		if (r != null) {
+			return r[1];
+		}
+		return null;
+	}
+	var id = getCookie("id");
+	console.log(id); /*点击编辑音频的时候传递的值:目录的id*/
+
+	layui.use("dynamic", layui.factory("audio")).use(["admin", "useradmin", "table", "laydate", "form"], function () {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+		form.render();
+		/*日期时间范围选择*/
+		laydate.render({
+			elem: "#uploadTime",
+			type: "datetime",
+			range: true,
+		});
+		/*点击查看大图*/
+		$("body").on("click", ".img", function () {
+			layer.open({
+				type: 1,
+				title: false,
+				closeBtn: 0,
+				area: "auto",
+				maxHeight: 700,
+				maxWidth: 700,
+				skin: "layui-layer-nobg", //没有背景色
+				shadeClose: true,
+				content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr("src") + '"/>',
+			});
+		});
+
+		//事件
+		var active = {
+			add: function () {
+				admin.popup({
+					title: "添加章节",
+					area: ["550px", "500px"],
+					id: "LAY-popup-user-add",
+					success: function (layero, index) {
+						view(this.id)
+							.render("audio/addAudio")
+							.done(function () {
+								form.render();
+								//监听提交
+								form.on("submit(LAY-audio-front-submit)", function (data) {
+									var field = data.field;
+									console.log(field);
+									$.ajax({
+										url: layui.setter.urll + "/api/admin/audio/add",
+										method: "post",
+										contentType: "application/json;charset=UTF-8",
+										data: JSON.stringify({
+											token: layui.data("data").token,
+											ifPay: field.isPopular /*是否付费*/,
+											dirId: id /*给哪个目录下添加音频*/,
+											audioPath: field.audioPath /*音频路径*/,
+											lrcPath: field.lrc /*音歌词路径*/,
+											image: field.photo /*图片路径*/,
+											title: field.title /*音频标题*/,
+											introduce: field.introduce /*音频简介*/,
+											audioTime: field.audioLength /*音频时间*/,
+										}),
+										success: function (data) {
+											if (data.data == 1) {
+												layer.alert("添加成功", {icon: 1});
+												layui.table.reload("LAY-edit-manage");
+											} else {
+												layer.alert("添加失败，请稍后重试", {icon: 2});
+											}
+										},
+										error: function (data) {
+											layer.alert("添加失败，请稍后重试", {icon: 2});
+										},
+									});
+									layer.close(index); //执行关闭
+								});
+							});
+					},
+				});
+			},
+		};
+
+		$(".layui-btn.layuiadmin-btn-useradmin").on("click", function () {
+			var type = $(this).data("type");
+			active[type] ? active[type].call(this) : "";
+		});
+	});
+</script>

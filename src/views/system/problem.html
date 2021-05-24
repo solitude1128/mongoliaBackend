@@ -1,0 +1,144 @@
+  
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>系统管理</cite></a>
+    <a><cite>常见问题</cite></a>
+  </div>
+</div>
+
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+      <div class="layui-form-item">
+      	
+      	<!--问题名称-->
+        <div class="layui-inline">
+          <label class="layui-form-label">问题名称</label>
+          <div class="layui-input-block">
+            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+          </div>
+        </div>
+        
+        <!--创建时间-->
+        <div class="layui-inline">
+          <label class="layui-form-label">创建时间</label>
+          <div class="layui-input-inline" style="width: 176px;">
+            <input class="layui-input layui-input-inline" style="width: 186px;" name="createTime" id="createTime" placeholder="起始时间  :  yyyy-MM-dd" autocomplete="off" >
+          </div>
+        </div>
+        
+        <!--搜索-->
+        <div class="layui-inline">
+          <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-system-front-search">
+            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+          </button>
+        </div>
+        
+      </div>
+    </div>
+    
+    <div class="layui-card-body">
+      
+    <!--添加问题-->
+		<div style="padding-bottom: 10px;">
+			<button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加问题</button>
+		</div>
+			
+    <table id="LAY-system-problem" lay-filter="LAY-system-problem"></table>
+      
+	  <!--操作-->
+	  <script type="text/html" id="table-system-webuser">
+	      <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+	    	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+	  </script>
+	  
+    </div>
+  </div>
+</div>
+
+<script>
+layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table','laydate','form'], function(){
+  var $ = layui.$
+  ,admin = layui.admin
+  ,view = layui.view
+  ,table = layui.table
+  ,laydate = layui.laydate
+  ,form = layui.form;
+  
+  /*日期时间范围选择*/
+	laydate.render({ 
+	  elem: '#createTime'
+	  ,type: 'datetime'
+	  ,range: true
+	});
+	
+
+  /*监听搜索*/
+  form.on('submit(LAY-system-front-search)', function(data){
+    var field = data.field;
+    console.log(field);
+    var createTime = field.createTime;
+    var ct = createTime.split(" - ");
+    table.reload('LAY-system-problem', {
+	    	url:layui.setter.urll+'/api/admin/problem/search'
+	    	,method:'get'
+	      ,where: {
+	    	   token: layui.data('data').token
+	        ,name:field.name.replace(/\s*/g,"")							/*问题名称*/
+	        ,start:ct[0]																		/*创建起始时间*/
+	        ,end:ct[1]																			/*创建结束时间*/
+	      }
+       ,page: true
+    });
+  });
+
+  //事件
+  var active = {
+     add: function(){
+      admin.popup({
+        title: '添加问题'
+        ,area: ['900px', '580px']
+        ,id: 'LAY-popup-user-add'
+        ,success: function(layero, index){
+          view(this.id).render('system/addProblem').done(function(){
+            form.render();
+            form.on('submit(LAY-problem-front-submit)', function(data){
+              var field = data.field;
+              console.log(field.problemName);
+              console.log(field.description);
+              $.ajax({
+              	url:layui.setter.urll+'/api/admin/problem/add'
+                ,method:"post"
+              	,contentType:'application/json;charset=UTF-8'
+              	,data: JSON.stringify({
+              			 'token': layui.data('data').token
+          					,'problem':field.problemName		/*问题名称*/
+          					,'answer':field.description			/*回复描述*/
+              	}),
+                  success:function(data){
+                  	if(data.data==1){
+                  			layer.alert('已添加',{icon:1});
+	                    	layui.table.reload('LAY-system-problem');
+                  	}else{
+                  			layer.alert('操作失败，请稍后重试');
+                  	}
+                  },
+                  error:function(data){
+                      layer.alert('操作失败，请稍后重试');
+                  }
+              });
+              layer.close(index);
+            });
+          });
+        }
+      });
+    }
+  };
+  
+  $('.layui-btn.layuiadmin-btn-useradmin').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+});
+</script>

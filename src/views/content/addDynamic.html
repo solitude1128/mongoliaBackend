@@ -1,0 +1,230 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+  <!--标题-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">标题</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="title"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--选择标签-->
+    <div class="layui-inline" style="width: 245px;">
+      <label class="layui-form-label">选择标签</label>
+      <div class="layui-input-block">
+        <select name="label" id="label" lay-verify="required">
+        </select>
+      </div>
+    </div>
+  
+        
+  <!--上传图片-->
+  	<div class="layui-block" style="width: 200px;margin-top: 15px;">
+	  	<div class="layui-upload">
+		  <button type="button" class="layui-btn" id="test1" style="position: absolute;left: 25px;">上传图片</button>
+		  <div class="layui-upload-list" style="position: absolute;left: 200px;">
+		  	<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;width:100px;height: 40px;position: absolute;left: -70px;top: -20px;">
+		  	预览图：
+		    <img id="demo1" class="img"  width="40px"  style="position: absolute;left: 70px;>
+		    <p id="demoText" style="position: absolute;left: 120px;"></p>
+		    <input type="hidden" name="demo2" id="demo2" lay-verify="image"/>
+		    </blockquote>
+		  </div>
+		</div> 
+	</div> 	
+	
+	<!--作者简介-->
+	<br /><br /><br /><br />
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">作者简介</label>
+	    <div class="layui-input-inline">
+	      <script type="text/html" template>
+	        <textarea type="text" style="resize:none;width: 235px;height: 100px;" name="author" placeholder="请输入" lay-verify="required" autocomplete="off" class="layui-input">
+	      </script>
+	    </div>
+	  </div>
+	  
+	  <!--艺人简介-->
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">艺人简介</label>
+	    <div class="layui-input-inline">
+	      <script type="text/html" template>
+	        <textarea type="text" style="resize:none;width: 235px;height: 100px;" name="artist" placeholder="请输入" lay-verify="required" autocomplete="off" class="layui-input">
+	      </script>
+	    </div>
+	  </div>
+	  
+	  <!--上传音频-->
+	  <div class="layui-form-item">
+	  	<input type="hidden" id="audioLength" lay-verify="audio" name="audioLength"/>
+	  	<input type="hidden" name="audioPath" />
+	    <label class="layui-form-label">
+	    	<button type="button" class="layui-btn" id="upMusic" style="position: absolute;left: 0px;">
+	    		<i class="layui-icon"></i>
+	    		上传音频
+	    	</button>
+	    </label>
+	    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-left: 120px;width: 200px;">
+		    音频预览：
+		    <div class="layui-upload-list" id="audioDemo"></div>
+		</blockquote>
+	  </div>
+	  
+	  <!--是否推荐-->
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">是否推荐</label>
+	    <div class="layui-input-block">
+	      <script type="text/html" template>
+	        <input type="radio" name="isRecommend"  value="1" title="是" checked>
+			<input type="radio" name="isRecommend"  value="0" title="否">
+	      </script>
+	    </div>
+	  </div>
+  
+  	  <!--是否热门-->
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">是否热门</label>
+	    <div class="layui-input-block">
+	      <script type="text/html" template>
+	        <input type="radio" name="isPopular"  value="1" title="是" checked>
+			<input type="radio" name="isPopular"  value="0" title="否">
+	      </script>
+	    </div>
+	  </div>
+  
+  	  <!--是否上架-->
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">是否上架</label>
+	    <div class="layui-input-block">
+	      <script type="text/html" template>
+	        <input type="radio"  name="isUpperShelf"  value="1" title="是" checked>
+			<input type="radio"  name="isUpperShelf"  value="0" title="否">
+	      </script>
+	    </div>
+	  </div>
+	  
+	  
+	  <!--确认-->
+	  <div class="layui-form-item" style="margin-top: 15px;">
+	    <label class="layui-form-label"></label>
+	    <div class="layui-input-inline">
+	      <input type="button" lay-submit lay-filter="LAY-dynamic-front-submit" value="确认" class="layui-btn">
+	    </div>
+	  </div>
+</div>
+
+<script>
+layui.use(['admin', 'form', 'upload', 'jquery'], function(){
+  	var $ = layui.$
+  	,form = layui.form
+  	,jquery = layui.jquery
+  	,upload = layui.upload;
+  	
+  	form.verify({
+        image: function (value, item) {
+        	if(value==''){
+        		return '请选择图片';
+        	}
+        }
+    });
+    
+    form.verify({
+        audio: function (value, item) {
+            if(value==''){
+        		return '请选择音频';
+        	}
+        }
+    });
+    
+  	/*加载动态标签下拉框*/
+  	$.ajax({
+	    url:layui.setter.urll+'/api/admin/tag/dynamic/all'
+	    ,method:"get"
+	    ,data:{
+            'token': layui.data('data').token
+        }
+	    ,success:function(result){
+	        var list = result["data"];
+	        var server = document.getElementById("label");
+	        for(var p in list){
+	            var option = document.createElement("option");
+	            option.setAttribute("value",list[p].id);
+	            option.innerText=list[p].content;
+	            server.appendChild(option);
+	            form.render("select");
+			} 
+	    } 
+	});
+  	
+ 	/*点击查看大图*/
+	$('body').on('click','.img', function(){
+	    layer.open({
+	        type: 1,
+	        title: false,
+	        closeBtn: 0,
+	        area: 'auto',
+	        maxHeight: 600,
+	        maxWidth : 600,
+	        skin: 'layui-layer-nobg',
+	        shadeClose: true,
+	        content: '<img style="max-width: 600px;max-height: 600px;" src="'+$(this).attr('src')+'"/>'
+	    });
+	});
+        
+    /*上传音频*/
+	upload.render({
+	    elem: '#upMusic'
+	   	,url:layui.setter.urll+'api/upload/audio'
+	    ,accept: 'audio'
+	    , auto: false
+        , choose: function (obj) {
+            obj.preview(function(index, file, result){
+				var audio = document.createElement("AUDIO");
+				audio.setAttribute('src', result);
+				$('body').append(audio);
+				//setTimeout(function () {
+				    //if (audio.duration < 1200) {
+				        var durataion = audio.duration + '';
+				        var strs= new Array();
+						strs=durataion.split("."); //字符分割
+						$('#audioLength').val(strs[0]);
+				        $('#audioDemo').text(file.name);/*音频回显*/
+				        obj.upload(index, file);//文件上传
+				    //} else {
+				    //	layer.alert('请您选择时长在20分钟之内的音频',{ icon: 5 });
+				    // 	return false;
+				    //}
+				//}, 3000);
+		    });
+        }
+	    ,before: function(obj){
+	    	
+	  	}
+	  	,done: function(data, index, upload){
+	  		$('input[name="audioPath"]').val(data.data);
+	   		layer.closeAll('loading'); //关闭loading
+	  	}
+	  	,error: function(index, upload){
+	    	layer.closeAll('loading'); //关闭loading
+	  	}
+	});
+  
+	<!--上传图片-->  
+	var uploadInst = upload.render({
+	    elem: '#test1'
+	    ,url: layui.setter.urll+'/api/upload/image'
+	    ,before: function(obj){
+	      obj.preview(function(index, file, result){
+	        $('#demo1').attr('src', result);
+	      });
+	    }
+	    ,done: function(result){
+	    	$('#demo2').val(result.data);
+	    }
+  	});
+})
+</script>

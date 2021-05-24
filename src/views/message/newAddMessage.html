@@ -1,0 +1,205 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>消息管理</cite></a>
+        <a><cite>新增消息</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+
+    <div class="layui-card">
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+
+            <div class="layui-form-item">
+
+                <!--用户昵称-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uname" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <!--手机号-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-inline" style="width: 176px;">
+                        <input class="layui-input layui-input-inline" style="width: 186px;" name="phone" id="phone" placeholder="请输入" autocomplete="off">
+                    </div>
+                </div>
+
+                <!--搜索按钮-->
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-message-front-search">
+	            		<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+	        		</button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+
+            <!--新增消息-->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">新增消息</button>
+
+                <!--所有用户添加消息-->
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="addAll">APP所有用户添加消息</button>
+            </div>
+
+            <!--数据表格-->
+            <table id="LAY-message-add" lay-filter="LAY-message-add"></table>
+
+            <!--性别-->
+            <script type="text/html" id="sex">
+                {{# if(d.sex==1){ }} 男 {{# } else if(d.sex==2){ }} 女 {{# } else { }} 暂无 {{# } }}
+            </script>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    layui.use('message', layui.factory('message')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+
+        /*监听搜索用户*/
+        form.on('submit(LAY-message-front-search)', function(data) {
+            var field = data.field;
+            console.log(field);
+            table.reload('LAY-message-add', {
+                url: layui.setter.urll + '/api/admin/user/search/phone/name',
+                method: 'get',
+                where: {
+                    token: layui.data('data').token,
+                    nickname: field.uname.replace(/\s*/g, ""),
+                    phone: field.phone.replace(/\s*/g, "")
+                },
+                page: true
+            });
+            layui.table.reload('LAY-message-add');
+        });
+
+        /*事件*/
+        var active = {
+            add: function() {
+                    var checkStatus = table.checkStatus('LAY-message-add'),
+                        checkData = checkStatus.data; //得到选中的数据
+                    if (checkData.length === 0) {
+                        return layer.msg('请选择数据');
+                    }
+                    /*app指定用户添加消息*/
+                    admin.popup({
+                        title: '新增消息',
+                        area: ['500px', '450px'],
+                        id: 'LAY-popup-user-add',
+                        success: function(layero, index) {
+                            view(this.id).render('message/addMessage').done(function() {
+                                form.render();
+                                form.on('submit(LAY-message-front-submit)', function(data) {
+                                    var field = data.field;
+                                    var uid = '';
+                                    for (let i = 0; i < checkData.length; i++) {
+                                        uid += checkData[i].uid + ','
+                                    }
+                                    uid = uid.slice(0, -1);
+                                    $.ajax({
+                                        url: layui.setter.urll + "/api/admin/message/add",
+                                        type: "post",
+                                        contentType: 'application/json;charset=UTF-8',
+                                        data: JSON.stringify({
+                                            'token': layui.data('data').token,
+                                            'msgTitle': field.title /*标题*/ ,
+                                            'msgBriefly': field.content /*内容简要*/ ,
+                                            'msgContent': field.messageContent /*消息内容*/ ,
+                                            'receiver': uid /*接收用户*/
+                                        }),
+                                        success: function(data) {
+                                            if (data.code == 200) {
+                                                layer.alert('已添加', {
+                                                    icon: 1
+                                                });
+                                                layui.table.reload('LAY-message-add');
+                                            } else {
+                                                layer.alert('添加失败，请稍后重试', {
+                                                    icon: 2
+                                                });
+                                            }
+                                        },
+                                        error: function(data) {
+                                            layer.alert('操作失败', {
+                                                icon: 2
+                                            });
+                                        }
+                                    });
+                                    layer.close(index);
+                                });
+                            });
+                        }
+                    });
+                }
+                /*app全部用户添加消息*/
+                ,
+            addAll: function() {
+                admin.popup({
+                    title: '新增消息',
+                    area: ['500px', '450px'],
+                    id: 'LAY-popup-user-add',
+                    success: function(layero, index) {
+                        view(this.id).render('message/addMessage').done(function() {
+                            form.render();
+                            form.on('submit(LAY-message-front-submit)', function(data) {
+                                var field = data.field;
+                                $.ajax({
+                                    url: layui.setter.urll + "/api/admin/message/add",
+                                    method: "post",
+                                    contentType: 'application/json;charset=UTF-8',
+                                    data: JSON.stringify({
+                                        'token': layui.data('data').token,
+                                        'msgTitle': field.title /*标题*/ ,
+                                        'msgBriefly': field.content /*内容简要*/ ,
+                                        'msgContent': field.messageContent /*消息内容*/ ,
+                                        'receiver': 0 /*接收用户*/
+                                    }),
+                                    success: function(data) {
+                                        if (data.code == 200) {
+                                            layer.alert('已添加', {
+                                                icon: 1
+                                            });
+                                            layui.table.reload('LAY-message-add');
+                                        } else {
+                                            layer.alert('添加失败，请稍后重试', {
+                                                icon: 2
+                                            });
+                                        }
+                                    },
+                                    error: function(data) {
+                                        layer.alert('操作失败', {
+                                            icon: 2
+                                        });
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+</script>

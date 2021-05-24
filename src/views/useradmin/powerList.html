@@ -1,0 +1,72 @@
+<div class="layui-form" lay-filter="layuiadmin-form-admin" style="padding: 20px 30px 0 0">
+	
+    <div id="power-tree-list">
+        <div class="power-item">
+            <div class="power-item-title">
+                <input type="checkbox" name="powerIds" value="{{id}}">
+                <span>{{title}}</span>
+            </div>
+            <div class="power-item-body">
+                {{children}}
+            </div>
+        </div>
+    </div>
+
+	<div class="layui-form-item">
+		<label class="layui-form-label"></label>
+		<div class="layui-input-inline">
+			<input type="button" lay-submit lay-filter="LAY-user-back-submit" value="确认" class="layui-btn" />
+		</div>
+	</div>
+</div>
+<style>
+    #power-tree-list{
+        display: flex;
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+    }
+    .power-item{
+        width: 100%;
+        box-sizing: border-box;
+        padding-left: 20px;
+    }
+    .power-item-title{
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+</style>
+<script type="text/javascript">
+	layui.use(["layer", "form", "table", "layedit", "laydate", "jquery"], function () {
+		var form = layui.form,
+			laydate = layui.laydate,
+			layer = layui.layer,
+			$ = layui.jquery,
+			tree = layui.tree;
+
+		/*加载角色下拉框*/
+		$.ajax({
+			url: layui.setter.urll + "/api/admin/auth/role/list",
+			method: "get",
+			data: {
+				token: layui.data("data").token,
+			},
+			success: function (result) {
+				var list = result["data"];
+				var server = document.getElementById("role");
+				for (var p in list) {
+					var option = document.createElement("option");
+					option.setAttribute("value", list[p].id);
+					option.innerText = list[p].rolesName;
+					server.appendChild(option);
+					form.render("select");
+				}
+				var classId = "dd[lay-value=" + $("#rolesId").val() + "]";
+				$("#role").next().find("dl").find(classId).click();
+				form.render("select");
+			},
+		});
+	});
+</script>

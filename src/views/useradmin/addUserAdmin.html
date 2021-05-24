@@ -1,0 +1,108 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+    <!--管理员名称-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">管理员名称</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="adminName" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--密码-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input name="passWord" type="text" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+
+    <!--角色-->
+    <div class="layui-inline">
+        <label class="layui-form-label">角色</label>
+        <div class="layui-input-block" style="width: 150px;">
+            <select name="role" id="role" lay-verify="required"></select>
+        </div>
+    </div>
+
+    <!--电台分类-->
+    <!-- <div class="layui-inline" style="margin-top: 15px;">
+      <label class="layui-form-label">电台分类</label>
+      <div class="layui-input-block"  style="width: 150px;">
+        <select name="radioType" id="radioType" lay-verify="required"></select>
+      </div>
+    </div> -->
+
+    <!--联系方式-->
+    <div class="layui-form-item" style="margin-top: 15px;">
+        <label class="layui-form-label">联系方式</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="tel" lay-verify="phone" maxlength="11" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--确认-->
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-useradmin-front-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'form', 'table', 'layedit', 'laydate', 'jquery'], function() {
+        var $ = layui.$,
+            form = layui.form,
+            upload = layui.upload,
+            laydate = layui.laydate,
+            layer = layui.layer,
+            $ = layui.jquery;
+
+        /*加载角色下拉框*/
+        $.ajax({
+            url: layui.setter.urll + '/api/admin/auth/role/list',
+            method: "get",
+            data: {
+                'token': layui.data('data').token
+            },
+            success: function(result) {
+                var list = result["data"];
+                var server = document.getElementById("role");
+                for (var p in list) {
+                    var option = document.createElement("option");
+                    option.setAttribute("value", list[p].id);
+                    option.innerText = list[p].rolesName;
+                    server.appendChild(option);
+                    form.render("select");
+                }
+            }
+        })
+
+        /*加载电台二级分类下拉框*/
+        $.ajax({
+            url: layui.setter.urll + '/api/admin/class/radio/manager',
+            method: "get",
+            data: {
+                'token': layui.data('data').token
+            },
+            success: function(result) {
+                var list = result["data"];
+                var server = document.getElementById("radioType");
+                for (var p in list) {
+                    var option = document.createElement("option");
+                    option.setAttribute("value", list[p].id);
+                    option.innerText = list[p].title;
+                    server.appendChild(option);
+                    form.render("select");
+                }
+            }
+        })
+    })
+</script>

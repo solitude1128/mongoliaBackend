@@ -1,0 +1,63 @@
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+  <!--举报动态的id-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="id" value="{{ d.params.id || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">动态图片</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <img style="width:200px; height:200px" src="{{ layui.setter.urll + d.params.image }}"/>
+      </script>
+    </div>
+  </div>
+  
+  <!--作者简介-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">作者简介</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <textarea type="text" name="author" readonly="readonly" style="resize: none;width: 480px;height: 120px;" lay-verify="required"  autocomplete="off" class="layui-input">
+        	{{ d.params.author || '暂无' }}
+        </textarea>
+      </script>
+    </div>
+  </div>
+  
+  <!--艺人简介-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">艺人简介</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <textarea type="text" name="artist" readonly="readonly" style="resize: none;width: 480px;height: 120px;"  lay-verify="required"  autocomplete="off" class="layui-input">
+        	{{ d.params.artist || '暂无' }}
+        </textarea>
+      </script>
+    </div>
+  </div>
+    
+	  <!--音频内容-->
+	  <div class="layui-form-item">
+	    <label class="layui-form-label" style="margin-top: 15px;">音频内容</label>
+	    <div class="layui-input-inline" style="margin-top: 8px;">
+	      <script type="text/html" template>
+					<audio controls="controls"  src="{{layui.setter.urll+d.params.content}}"></audio>
+	      </script>
+	    </div>
+	  </div>
+	  
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-detail-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+  
+</div>

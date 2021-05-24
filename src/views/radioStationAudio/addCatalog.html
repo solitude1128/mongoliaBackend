@@ -1,0 +1,295 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+	<!--目录标题-->
+	<div class="layui-form-item">
+		<label class="layui-form-label">目录标题</label>
+		<div class="layui-input-inline">
+			<script type="text/html" template>
+        <input type="text" name="catalogTitle"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+		</div>
+	</div>
+
+	<!--目录介绍-->
+	<div class="layui-form-item">
+		<label class="layui-form-label">目录介绍</label>
+		<div class="layui-input-inline">
+			<script type="text/html" template>
+        <input type="text" name="catalogIntroduce"  lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+		</div>
+	</div>
+
+	<!--电台分类-->
+	<!--<div class="layui-inline" style="width: 200px;">
+      <label class="layui-form-label">电台分类</label>
+      <div class="layui-input-block" style="width: 190px;">
+      	<script type="text/html" template>
+	        <select name="cataType" id="cataType">
+	        </select>
+        </script>
+      </div>
+    </div>-->
+
+	<div class="layui-form-item">
+
+		<label class="layui-form-label">电台分类</label>
+
+		<div class="layui-input-block" style="width: 190px;" id="oneClass">
+			<select name="cataType" id="cataType" lay-filter="demo">
+				<option value="">请选择一级分类</option>
+			</select>
+		</div>
+
+		<div class="layui-input-block" style="width: 190px;margin-top: 15px;">
+			<select name="cataType2" id="cataType2" lay-filter="demo2" lay-verify="required">
+				<option value="">请选择二级分类</option>
+			</select>
+		</div>
+
+		<div class="layui-input-block" style="width: 190px;margin-top: 15px;">
+			<select name="cataType3" id="cataType3" lay-filter="demo3" lay-verify="required">
+				<option value="">请选择三级分类</option>
+			</select>
+		</div>
+
+	</div>
+
+	<div class="layui-form-item layui-form" lay-filter="component-form-element" style="margin-top: 10px;">
+		<label class="layui-form-label">目录标签</label>
+		<div class="layui-input-inline">
+			<script type="text/html" template>
+                <div id="auth">
+                </div>
+            </script>
+		</div>
+	</div>
+
+	<!--上传图片-->
+	<div class="layui-block" style="width: 200px;margin-top: 15px;">
+		<div class="layui-upload">
+			<button type="button" class="layui-btn" id="test1" style="position: absolute;left: 25px;">上传图片</button>
+			<div class="layui-upload-list" style="position: absolute;left: 200px;">
+				<blockquote class="layui-elem-quote layui-quote-nm"
+					style="margin-top: 10px;width:100px;height: 40px;position: absolute;left: -70px;top: -20px;">
+					预览图：
+					<img id="demo1" class="img" width="40px" style="position: absolute;left: 70px;">
+					<p id="demoText" style="position: absolute;left: 120px;"></p>
+					<input type="hidden" name="demo2" id="demo2" value="" />
+				</blockquote>
+			</div>
+		</div>
+	</div>
+
+	<!--价格-->
+	<br /><br /><br /><br />
+	<div class="layui-form-item">
+		<label class="layui-form-label">价格</label>
+		<div class="layui-input-inline">
+			<script type="text/html" template>
+	        <input type="text" name="price" placeholder="请输入" lay-verify="number" autocomplete="off" class="layui-input">
+	      </script>
+		</div>
+	</div>
+
+	<!--是否上架-->
+	<div class="layui-form-item">
+		<label class="layui-form-label">是否上架</label>
+		<div class="layui-input-block">
+			<script type="text/html" template>
+	        <input type="radio"  name="isUpperShelf"  value="1" title="是" checked>
+			<input type="radio"  name="isUpperShelf"  value="0" title="否">
+	      </script>
+		</div>
+	</div>
+
+	<!--确认-->
+	<div class="layui-form-item">
+		<label class="layui-form-label"></label>
+		<div class="layui-input-inline">
+			<input type="button" lay-submit lay-filter="LAY-catalog-front-submit" value="确认" class="layui-btn">
+		</div>
+	</div>
+</div>
+
+<script>
+	layui.use(['admin', 'form', 'upload', 'jquery'], function () {
+		var $ = layui.$
+			, form = layui.form
+			, jquery = layui.jquery
+			, upload = layui.upload;
+
+		if (layui.data('data').rid == -1) {
+			layer.closeAll();
+			layer.alert('无法添加');
+		}
+
+		// < !--加载电台一级分类下拉框-->
+		$.ajax({
+			// < !--url: layui.setter.urll + "/api/admin/class/audio/all"-- >
+			url: layui.setter.urll + "/api/admin/class/radio/all/0"
+			, method: "get"
+			, data: {
+				'token': layui.data('data').token
+			}
+			, success: function (result) {
+				var list = result["data"];    //返回的数据
+				var server = document.getElementById("cataType");
+				for (var p in list) {
+					var option = document.createElement("option");
+					option.setAttribute("value", list[p].id);
+					option.innerText = list[p].title;
+					server.appendChild(option);
+					form.render("select");
+				}
+			}
+		});
+
+		if (layui.data('data').rid != 0) {
+			$('#oneClass').hide();
+			console.log(layui.data('data').rid);
+		} else {
+			$('#oneClass').show();
+			console.log(layui.data('data').rid);
+		}
+
+		if (layui.data('data').rid != 0 && layui.data('data').rid != -1) {
+			$.ajax({
+				url: layui.setter.urll + "/api/admin/class/radio/all/" + layui.data('data').rid
+				, method: "get"
+				, data: {
+					'token': layui.data('data').token
+				}
+				, success: function (result) {
+					var list = result["data"];
+					var server = document.getElementById("cataType2");
+					server.innerHTML = '<option value="">请选择二级分类</option>';
+					for (var p in list) {
+						var option = document.createElement("option");
+						option.setAttribute("value", list[p].id);
+						option.innerText = list[p].title;
+						server.appendChild(option);
+					}
+					form.render("select");
+				}
+			});
+		}
+
+		// < !--监听电台一级分类选择事件-->
+		form.on('select(demo)', function (data) {
+			var temp = -1;
+			var flag = $("#cataType").val();
+			if (flag != "") {
+				temp = flag;
+			}
+			// < !--加载电台二级分类下拉框-->
+			$.ajax({
+				url: layui.setter.urll + "/api/admin/class/radio/all/" + temp
+				, method: "get"
+				, data: {
+					'token': layui.data('data').token
+				}
+				, success: function (result) {
+					var list = result["data"];
+					var server = document.getElementById("cataType2");
+					server.innerHTML = '<option value="">请选择二级分类</option>';
+					for (var p in list) {
+						var option = document.createElement("option");
+						option.setAttribute("value", list[p].id);
+						option.innerText = list[p].title;
+						server.appendChild(option);
+					}
+					form.render("select");
+				}
+			});
+		});
+
+		// < !--监听电台二级分类选择事件-->
+		form.on('select(demo2)', function (data) {
+			var temp2 = -1;
+			var flag2 = $("#cataType2").val();
+			if (flag2 != "") {
+				temp2 = flag2;
+			}
+			// < !--加载电台三级分类下拉框-->
+			$.ajax({
+				url: layui.setter.urll + "/api/admin/class/radio/all/" + temp2
+				, method: "get"
+				, data: {
+					'token': layui.data('data').token
+				}
+				, success: function (result) {
+					var list = result["data"];
+					var server = document.getElementById("cataType3");
+					server.innerHTML = '<option value="">请选择三级分类</option>';
+					for (var p in list) {
+						var option = document.createElement("option");
+						option.setAttribute("value", list[p].id);
+						option.innerText = list[p].title;
+						server.appendChild(option);
+					}
+					form.render("select");
+				}
+			});
+		});
+
+
+		// < !--加载目录标签复选框-->
+		$.ajax({
+			url: layui.setter.urll + '/api/admin/tag/audio/all',
+			type: 'get',
+			data: {
+				'token': layui.data('data').token
+			},
+			success: function (data) {
+				for (var i = 0; i < data.data.length; i++) {
+					var a = '<input type="checkbox" class="education" lay-filter="hope" id="' + data.data[i].id + '" value="' + data.data[i].content + '" name="checkbox" title="' + data.data[i].content + '" data-pid="' + data.data[i].id + '">';
+					$('#auth').append(a);
+					form.render();
+				}
+			}
+		});
+
+		// < !--限制目录标签选择数量-->
+		form.on('checkbox(hope)', function (data) {
+			console.debug(data);
+			var len = $(".education:checked").length;
+			if (len > 4) {
+				$(data.elem).next().attr("class", "layui-unselect layui-form-checkbox");
+				$(data.elem).prop("checked", false);
+				layer.msg('最多只能选4项！', { icon: 5 });
+				return false;
+			}
+		});
+
+		/*点击查看大图*/
+		$('body').on('click', '.img', function () {
+			layer.open({
+				type: 1,
+				title: false,
+				closeBtn: 0,
+				area: 'auto',
+				maxHeight: 600,
+				maxWidth: 600,
+				skin: 'layui-layer-nobg', //没有背景色
+				shadeClose: true,
+				content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr('src') + '"/>'
+			});
+			e.stopPropagation();
+		});
+
+		// < !--普通图片上传-->
+		var uploadInst = upload.render({
+			elem: '#test1'
+			, url: layui.setter.urll + '/api/upload/image'
+			, before: function (obj) {
+				obj.preview(function (index, file, result) {
+					$('#demo1').attr('src', result);
+				});
+			}
+			, done: function (data) {
+				$('#demo2').val(data.data);
+			}
+		});
+	})
+</script>

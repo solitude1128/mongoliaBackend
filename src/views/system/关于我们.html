@@ -1,0 +1,135 @@
+
+
+<title>网站用户</title>
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>系统设置</cite></a>
+    <a><cite>关于我们</cite></a>
+  </div>
+</div>
+
+
+	<div class="layui-form-item">
+    <label class="layui-form-label">ICP备案号</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="icp" id="ICP" value="" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+
+
+  <div class="layui-form-item" >
+    <label class="layui-form-label">营业执照</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+      	<input type="hidden" id="pto" name="pto" />
+        <img style="width: 600px;height: 400px; border:none;" name="photo" id="photo" class="">
+        <br />
+        <button type="button" class="layui-btn layui-btn-primary" id="LAY_avatarUpload">
+	      	<i class="layui-icon">&#xe67c;</i>上传图片
+	    	</button>
+      </script>
+    </div>
+  </div>
+
+
+  <!--确认按钮的内容-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-system-front-submit"  value="确认" class="layui-btn">
+    </div>
+  </div>
+</div>
+<script>
+
+
+layui.use('upload', function(){
+  var $ = layui.jquery
+  ,upload = layui.upload;
+ /*上传营业执照图片*/
+ upload.render({
+    elem: '#LAY_avatarUpload'
+    ,url: layui.setter.urll+'/admin/system_settings/uploadPhoto'
+		,method:"post"
+    ,contentType:'application/json;charset=UTF-8'
+    , data: JSON.stringify({
+				'token': layui.data('data').token,
+        'uid': layui.data('data').uid
+			})
+    ,accept: 'file' //普通文件
+    ,exts: 'jpg|jpeg|png|' //允许上传的文件后缀
+    ,done: function(res){//返回值接收
+	console.log(res)
+			var photo = document.getElementById("photo");
+			var pto = document.getElementById("pto");
+    	photo.src=res.data.photo;
+    	pto.value=res.data.url
+    }
+  });
+});
+</script>
+
+<!--加载页面时ajax请求给input框赋值-->
+<script type="text/javascript">
+	layui.use(['layer', 'form', 'table', 'layedit', 'laydate', 'jquery'], function () {
+		 				var $ = layui.$,
+        		form = layui.form,
+            laydate = layui.laydate,
+            layer = layui.layer,
+            $ = layui.jquery;
+	$.ajax({
+    url:layui.setter.urll+"/admin/system_settings/selectSystemSettings",
+    type:"POST"
+    , contentType: 'application/json;charset=UTF-8'
+    , data: JSON.stringify({
+					'token': layui.data('data').token,
+       		'uid': layui.data('data').uid
+	  }),
+    success:function(result){
+    	var ic = document.getElementById("ICP");
+    	var photo = document.getElementById("photo");
+    	var pto = document.getElementById("pto");
+    	pto.value=result.data[0].photo;
+    	ic.value=result.data[0].icp;
+    	photo.src=layui.setter.urll+result.data[0].photo;
+    }
+	})
+
+  $(document).ready(function () {
+
+     if(location.href.indexOf("#reloaded")==-1){
+        location.href=location.href+"#reloaded";
+        location.reload();
+    }
+ })
+
+});
+
+//$(document).ready(function() {
+// //任何需要执行的js特效
+//  history.go(0) 
+//});
+</script>
+
+
+<!--<script>
+layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table','laydate','form'], function(){
+  var $ = layui.$
+  ,admin = layui.admin
+  ,view = layui.view
+  ,table = layui.table
+  ,laydate = layui.laydate
+  ,form = layui.form;
+  form.render(null, 'layadmin-userfront-formlist');
+
+
+});
+</script>-->
+
+<script>
+layui.use('system', layui.factory('system'));
+</script>

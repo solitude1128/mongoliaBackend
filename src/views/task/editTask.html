@@ -1,0 +1,58 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+	
+  <!--id-->
+  <div class="layui-form-item">
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="hidden" name="id" value="{{ d.params.id || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--可获积分-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">可获积分</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="integral" value="{{ d.params.integral || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--每天最多获取积分-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">每天最多获取积分</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="maxIntegral" value="{{ d.params.integralOfDay || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--任务详情-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">任务详情</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <textarea type="text" name="taskDetail" style="resize:none;width: 280px;height: 100px;" value="{{ d.params.detail || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+        	{{#  if(d.params.detail==null || d.params.detail=='' ){ }}
+			 	 暂无
+			{{#  } else { }}
+			  {{d.params.detail}}
+			{{#  } }}
+        </textarea>
+      </script>
+    </div>
+  </div>
+  
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-task-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+  
+</div>

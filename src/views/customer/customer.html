@@ -1,0 +1,38 @@
+<script>
+layui.use('layim', function(layim){
+  //先来个客服模式压压精
+  layim.config({
+  	init: {
+			  url:layui.setter.urll+"/customer"
+			  ,type: 'post' //默认get，一般可不填
+			  ,method:'post'
+		    ,contentType:'application/json;charset=UTF-8'
+		    ,data:{'uid':'603213'}
+		}  
+  ,brief: false //是否简约模式（如果true则不显示主面板）
+  }).chat({
+    name: '客服姐姐'
+    ,type: 'friend'
+    ,avatar: 'http://tp1.sinaimg.cn/5619439268/180/40030060651/1'
+    ,id: -2
+  });
+});
+</script>
+<script>
+	layui.use('advertisement', layui.factory('advertisement')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+			
+			
+			
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

@@ -1,0 +1,257 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0">
+	<!--轮播图名称-->
+	<div class="layui-form-item">
+		<label class="layui-form-label">目录广告名称</label>
+		<div class="layui-input-inline">
+			<script type="text/html" template>
+				<input
+					type="text"
+					name="name"
+					lay-verify="required"
+					placeholder="请输入"
+					autocomplete="off"
+					class="layui-input"
+				/>
+			</script>
+		</div>
+	</div>
+
+	<!--标题-->
+	<div class="layui-form-item">
+		<label class="layui-form-label">广告外链</label>
+		<div class="layui-input-inline">
+			<script type="text/html" template>
+				<input
+					type="text"
+					name="advertPath"
+					placeholder="请输入"
+					lay-verify="required"
+					autocomplete="off"
+					class="layui-input"
+				/>
+			</script>
+		</div>
+	</div>
+
+	<!--搜索音频-->
+	<div class="layui-form-item">
+		<label class="layui-form-label" id="text">广告时长</label>
+		<div class="layui-input-inline">
+			<input
+				type="text"
+				name="advertTime"
+				id="searchAudio"
+				lay-verify="required"
+				placeholder="秒"
+				autocomplete="off"
+				class="layui-input"
+			/>
+		</div>
+	</div>
+	<!--联系人-->
+	<div class="layui-form-item">
+		<label class="layui-form-label" id="text">联系人</label>
+		<div class="layui-input-inline">
+			<input
+				type="text"
+				name="contacts"
+				id="searchAudio"
+				lay-verify="required"
+				placeholder="请输入"
+				autocomplete="off"
+				class="layui-input"
+			/>
+		</div>
+	</div>
+	<!--联系人手机号-->
+	<div class="layui-form-item">
+		<label class="layui-form-label" id="text">联系人手机号</label>
+		<div class="layui-input-inline">
+			<input
+				type="text"
+				name="conPhone"
+				id="searchAudio"
+				lay-verify="required"
+				placeholder="请输入"
+				autocomplete="off"
+				class="layui-input"
+			/>
+		</div>
+	</div>
+
+	<!--上传图片-->
+	<div class="layui-input-block" style="margin-top: 15px">
+		<div class="layui-upload">
+			<button type="button" class="layui-btn" id="test1">上传图片</button>
+			<div class="layui-upload-list">
+				<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px; width: 153px; height: 40px">
+					预览图：<img id="demo1" class="img" width="40px" />
+					<p id="demoText"></p>
+					<input type="hidden" name="imgPath" id="demo2" lay-verify="photo" value="" />
+				</blockquote>
+			</div>
+		</div>
+	</div>
+
+	<!--跳转音频-->
+	<div class="layui-form-item">
+		<label class="layui-form-label">投放目录</label>
+		<div class="layui-input-inline">
+			<select name="imgAddress" lay-verify="required" lay-multiple lay-search id="imgAddress"></select>
+		</div>
+	</div>
+	<!--确认-->
+	<div class="layui-form-item">
+		<label class="layui-form-label"></label>
+		<div class="layui-input-inline">
+			<input
+				type="button"
+				id="confirm"
+				lay-submit
+				lay-filter="LAY-startAppAdv-front-submit"
+				value="确认"
+				class="layui-btn"
+			/>
+		</div>
+	</div>
+
+	<input type="hidden" name="id" id="id" />
+	<input type="hidden" name="content" id="content" />
+</div>
+<style>
+	#demo1{
+		max-height: 30px;
+	}
+</style>
+<script>
+	layui.use(["admin", "form", "upload", "jquery"], function () {
+		var $ = layui.$,
+			form = layui.form,
+			jquery = layui.jquery,
+			upload = layui.upload;
+
+		var list = [];
+		setTimeout(function () {
+			$.ajax({
+				url: layui.setter.urll + "/api/admin/banner/sort/0",
+				dataType: "JSON",
+				crossurll: true,
+				type: "get",
+				data: {
+					token: layui.data("data").token,
+				},
+				success: function (data) {
+					list = data.data;
+				},
+			});
+		}, 666);
+
+		$("#confirm").click(function () {
+			var result = $(":input[name='sort']").val();
+			for (var i = 0; i < list.length; i++) {
+				if (result == list[i]) {
+					layer.msg("排序已存在，请重新输入");
+					$(":input[name='sort']").focus();
+					return false;
+				}
+			}
+		});
+
+		/*监听下拉列表选择事件*/
+		form.on("select(demo)", function (data) {
+			var options = $("#goAudio option:selected");
+			$("#id").val(options.val());
+			$("#content").val(options.text());
+		});
+
+		/*搜索音频*/
+		// $("#search").click(function () {
+		// 	$.ajax({
+		// 		url: layui.setter.urll + "/api/admin/audio/search/title",
+		// 		type: "get",
+		// 		data: {
+		// 			token: layui.data("data").token,
+		// 			tmp: $("#searchAudio").val() /*标题*/,
+		// 		},
+		// 		success: function (result) {
+		// 			var list = result["data"];
+		// 			var server = document.getElementById("goAudio");
+		// 			server.innerHTML = '<option value="">选择跳转音频</option>';
+		// 			for (var p in list) {
+		// 				var option = document.createElement("option");
+		// 				option.setAttribute("value", list[p].id);
+		// 				option.innerText = list[p].title;
+		// 				server.appendChild(option);
+		// 			}
+		// 			form.render("select");
+		// 		},
+		// 		error: function (data) {
+		// 			layer.alert("操作失败", {icon: 2});
+		// 		},
+		// 	});
+		// });
+
+		/*点击查看大图*/
+		$("body").on("click", ".img", function () {
+			layer.open({
+				type: 1,
+				title: false,
+				closeBtn: 0,
+				area: "auto",
+				maxHeight: 600,
+				maxWidth: 600,
+				skin: "layui-layer-nobg",
+				shadeClose: true,
+				content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr("src") + '"/>',
+			});
+			e.stopPropagation();
+		});
+
+		// 普通图片上传>
+		var uploadInst = upload.render({
+			elem: "#test1",
+			url: layui.setter.urll + "/api/upload/image",
+			before: function (obj) {
+				obj.preview(function (index, file, result) {
+					$("#demo1").attr("src", result);
+				});
+			},
+			done: function (result) {
+				$("#demo2").val(result.data);
+			},
+		});
+
+		form.verify({
+			photo: function (value, item) {
+				if (value == "") {
+					return "请上传图片";
+				}
+			},
+		});
+		function setMultiple(id) {
+			openSelectModel($, form, {id: id, valueName: "id", labelName: "title"}, function searchAudio(str, callback) {
+				$.ajax({
+					url: layui.setter.urll + "api/admin/audio/selectAudioDirName",
+					method: "get",
+					contentType: "application/json;charset=UTF-8",
+					data: {
+						token: layui.data("data").token,
+						page: 1,
+						limit: 2,
+						title: str,
+					},
+					success: function (data) {
+                        console.log(data)
+						data.data.unshift({
+							id: "",
+							title: "暂不添加",
+						});
+						var dom = document.querySelector(id).cloneNode(true);
+						callback && callback(data);
+					},
+				});
+			});
+		}
+		setMultiple("#imgAddress");
+	});
+</script>

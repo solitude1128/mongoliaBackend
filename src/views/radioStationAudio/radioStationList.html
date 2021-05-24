@@ -1,0 +1,233 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>电台分类管理</cite></a>
+		<a><cite>添加音频</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--标题-->
+				<div class="layui-inline">
+					<label class="layui-form-label">标题</label>
+					<div class="layui-input-block">
+						<input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				
+				<!--是否付费-->
+		        <div class="layui-inline">
+		          <label class="layui-form-label">是否付费</label>
+		          <div class="layui-input-block" style="width: 186px;">
+		            <select name="isPay">
+		              <option value="">不限</option>
+		              <option value="1">是</option>
+		              <option value="0">否</option>
+		            </select>
+		          </div>
+		        </div>
+		        
+		        <!--是否上架-->
+		         <br />
+		        <div class="layui-inline">
+		          <label class="layui-form-label">是否上架</label>
+		          <div class="layui-input-block" style="width: 186px;">
+		            <select name="isUpper">
+		              <option value="">不限</option>
+		              <option value="1">是</option>
+		              <option value="0">否</option>
+		            </select>
+		          </div>
+		        </div>
+		        
+		        <!--目录分类-->
+			    <div class="layui-inline" style="width: 295px;">
+			      <label class="layui-form-label">目录分类</label>
+			      <div class="layui-input-block" >
+			        <select name="catalog" id="catalogType" lay-verify="catalogType" >
+			        	<option value="">不限</option>
+			        </select>
+			      </div>
+			    </div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline" style="margin-left: 25px;">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-audio-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+			<div style="padding-bottom: 10px;">
+		        <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">新增目录</button>
+		    </div>
+      
+			<!--数据表格-->
+			<table id="LAY-catalog-manage" lay-filter="LAY-catalog-manage"></table>
+			
+			<!--封面-->
+			<script type="text/html" id="imgTpl">
+				<img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.urll+"/"+d.imagePath}}>
+			</script>
+			
+			<!--音频标签-->
+			<script type="text/html" id="tagList">
+				{{# for(var i=0;i<d.tagList.length;i++){  }}
+					{{d.tagList[i].content}}
+					{{# if(i<(d.tagList.length)-1){ }}
+						、
+					{{#  } }}
+				{{# } }}
+			</script>
+			
+			<!--编辑、删除-->
+			<script type="text/html" id="table-catalog-operation">
+				<a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑目录</a>
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-href="radioStationAudio/edit/id={{d.id}}"><i class="layui-icon layui-icon-edit"></i>编辑音频</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+			</script>
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('radioStation', layui.factory('radioStation')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+		
+		/*加载目录分类下拉框*/
+		$.ajax({
+		    url:layui.setter.urll+"/api/admin/class/audio/all"
+		    ,method:"get"
+		    ,data:{
+            	'token': layui.data('data').token
+            }
+		    ,success:function(result){
+		        var list = result["data"];    //返回的数据
+		        var server = document.getElementById("catalogType");
+		        for(var p in list){
+		            var option = document.createElement("option");
+		            option.setAttribute("value",list[p].id);
+		            option.innerText=list[p].className;
+		            server.appendChild(option);
+		            form.render("select");
+				} 
+		    } 
+		})
+		
+		/*监听搜索*/
+		form.on('submit(LAY-audio-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			table.reload('LAY-catalog-manage', {
+				url: layui.setter.urll + '/api/admin/audio/dir/search',
+				method: 'get',
+				where: {
+					 token: layui.data('data').token
+					,title: field.title.replace(/\s*/g,"")	/*标题*/
+					,flag: field.isPay						/*是否付费*/
+					,state: field.isUpper					/*是否上架*/
+					,rec: field.catalog						/*目录分类*/
+					,age:4
+				},
+				page: true
+			});
+		});
+		
+		/*点击查看大图*/
+		$('body').on('click','.img', function(){
+		    layer.open({
+		        type: 1,
+		        title: false,
+		        closeBtn: 0,
+		        area: 'auto',
+		        maxHeight: 700,
+		        maxWidth : 700,
+		        skin: 'layui-layer-nobg', //没有背景色
+		        shadeClose: true,
+		        content: '<img style="max-width: 600px;max-height: 600px;" src="'+$(this).attr('src')+'"/>'
+		    });
+		    e.stopPropagation();
+		});
+		
+		//事件
+		var active = {
+			add: function() {
+				admin.popup({
+					title: '添加目录',
+					area: ['550px', '500px'],
+					id: 'LAY-popup-user-add',
+					success: function(layero, index) {
+						view(this.id).render('radioStationAudio/addCatalog').done(function() {
+							form.render();
+							form.on('submit(LAY-catalog-front-submit)', function(data) {
+								var field = data.field; //获取提交的字段
+								console.log(field);
+								var id = '';
+								var arr = new Array();
+					            $("input:checkbox[name='checkbox']:checked").each(function (i) {
+					                id += $(this).attr('id') + ',';
+					            });
+					            id = id.slice(0, -1);
+					            console.log(id);
+								$.ajax({
+					              	url:layui.setter.urll+'/api/admin/audio/dir/add'
+					                ,method:"post"
+					              	,contentType:'application/json;charset=UTF-8'
+					              	,data: JSON.stringify({
+					              		 'token': layui.data('data').token
+					              		,'classId':field.cataType3			/*分类id*/
+					              		,'flag':4							/*音频*/
+				              			,'title':field.catalogTitle			/*目录标题*/
+				              			,'introduce':field.catalogIntroduce	/*目录介绍*/
+//				              			,'catalogType':field.catalogType	/*目录分类*/
+				              			,'tag':id							/*目录标签*/
+				              			,'imagePath':field.demo2			/*封面图片*/
+				              			,'price':field.price				/*价格*/
+				              			,'ifRec':0
+				              			,'ifRel':field.isUpperShelf			/*是否上架*/
+					              	}),
+					                  success:function(data){
+					                  	if(data.data==1){
+					                  		layer.msg('已添加',{icon:1});
+					                  		layui.table.reload('LAY-catalog-manage');
+					                  	}else{
+					                  		layer.msg('添加失败，请稍后重试',{icon:2});
+					                  	}
+					                  },
+					                  error:function(data){
+					                      layer.msg('添加失败，请稍后重试',{icon:2});
+					                  }
+					              });
+								layer.close(index);
+							});
+						});
+					}
+				});
+			}
+		};
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

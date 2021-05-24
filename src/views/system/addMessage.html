@@ -1,0 +1,104 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+    <!--标题-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="title" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <!-- 消息类型 -->
+    <div class="layui-form-item">
+        <label class="layui-form-label">消息类型</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="radio" checked="" name="msgType" value="0" title="普通消息">
+                <input type="radio" name="msgType" value="1" title="弹窗消息">
+            </script>
+        </div>
+    </div>
+
+    <!--内容简要-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">内容简要</label>
+        <div class="layui-input-inline" style="width: 400px;">
+            <script type="text/html" template>
+                <textarea type="text" id="demo2" name="content" placeholder="请输入内容简要" style="display: none;"></textarea>
+            </script>
+        </div>
+    </div>
+
+    <!--消息内容-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">消息内容</label>
+        <div class="layui-input-inline" style="width: 400px;">
+            <script type="text/html" template>
+                <textarea id="demo" name="messageContent" placeholder="请输入消息内容" style="display: none;" placeholder="请输入"></textarea>
+            </script>
+        </div>
+    </div>
+    <!--定期发送-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">定期发送</label>
+        <div class="layui-input-inline" style="width: 400px;">
+            <script type="text/html" template>
+                <input type="text" name="timing" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">
+            </script>
+        </div>
+    </div>
+    <!--跳转链接-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">跳转链接</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="href" lay-verify="required" placeholder="https://www.baidu.com/" value="https://www.baidu.com/" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+
+    <!--确认-->
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input id="send" type="button" lay-submit lay-filter="LAY-message-front-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    layui.use(['admin', 'form', 'upload', 'layedit', 'laydate'], function() {
+        var $ = layui.$,
+            form = layui.form,
+            upload = layui.upload;
+        var laydate = layui.laydate;
+        var layedit = layui.layedit;
+        laydate.render({
+            elem: '#test5',
+            type: 'datetime'
+        });
+        layedit.set({
+            uploadImage: {
+                url: layui.setter.urll + '/api/upload/image',
+                method: "post",
+                contentType: 'multipart/form-data;'
+            }
+        });
+        var index = layedit.build('demo', {
+            tool: ['image', 'strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right']
+        });
+        var index2 = layedit.build('demo2', {
+            tool: ['image', 'strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right']
+        });
+        $("#send").on('click', function() {
+            var text = layedit.getContent(index);
+            var text2 = layedit.getContent(index2);
+            $("#demo").val(text);
+            $("#demo2").val(text2);
+        });
+        form.render();
+    });
+</script>

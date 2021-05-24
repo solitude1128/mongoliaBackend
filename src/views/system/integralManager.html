@@ -1,0 +1,172 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>系统管理</cite></a>
+    	<a><cite>积分管理</cite></a>
+	</div>
+</div>
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-card-body">
+    	<!--设置积分可兑换现金比例-->
+    	<div class="layui-form-item">
+			<div style="padding-bottom: 10px;margin-left: 110px;" >
+				<button class="layui-btn layuiadmin-btn-useradmin"  data-type="add">设置积分可兑换现金比例</button>
+			</div>
+		</div>
+		
+		  
+		  <!--积分使用说明-->
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">使用说明</label>
+		    <div class="layui-input-block">
+		        <!--<input type="text" name="content" placeholder="请输入" autocomplete="off" class="layui-input" >-->
+		        <textarea id="demo"  style="display: none;" placeholder="请输入消息内容">
+		        </textarea>
+		    </div>
+		  </div>
+		  
+		   <!--确认-->
+		  <div class="layui-form-item">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-inline">
+		      <input type="button" id="send"  value="确认" class="layui-btn">
+		    </div>
+		  </div>
+		  
+		  <!--积分使用说明-->
+		  <div class="layui-form-item" >
+		    <div class="layui-input-inline">
+		        <input type="hidden" name="content" id="content" placeholder="请输入" autocomplete="off" class="layui-input">
+		    </div>
+		  </div>
+		  
+    </div>
+  </div>
+</div>
+
+<script>
+	layui.use('system', layui.factory('system')).use(['admin','layedit', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			layedit = layui.layedit,
+			form = layui.form;
+			form.render();
+		
+		/*获取积分使用说明*/
+        $.ajax({
+            type: 'get',
+            url: layui.setter.ajaxUrl+'/api/admin/integral/rule/list',
+            data:{
+      			'token': layui.data('data').token
+          	},
+            success: function (data) {
+                $('#demo').val(data.data[0].description);
+                layui.use(['form','layedit'], function() {
+                    var $ = layui.$
+                        , form = layui.form
+                        , layedit = layui.layedit;
+                    layedit.set({
+						uploadImage: {
+							url: layui.setter.urll+'/api/upload/image'
+							, method: "post"
+							, contentType: 'multipart/form-data;'
+						}
+					});
+                    var index = layedit.build('demo', {
+                         tool: ['image', 'strong','italic','underline','del','|','left','center','right']
+                        ,height:400
+                    });
+                    $('#send').click(function () {
+                        layedit.sync(index);
+                    });
+                    form.render();
+                });
+            }
+        });
+
+		/*更新积分使用说明*/
+        $('#send').click(function () {
+          setTimeout(ajax, 200);
+            function ajax() {
+		          var cont = $('#demo').val();
+		          console.log(cont);
+		          $.ajax({
+		              type: 'POST',
+		              url: layui.setter.ajaxUrl+'/api/admin/integral/rule/edit',
+		              contentType:"application/json",
+		              data: JSON.stringify({
+		              	  'token': layui.data('data').token
+		                  ,'description':cont
+		              }),
+		              success: function (data) {
+		              	if(data.data==1){
+		              		layer.alert('已更新',{icon:1});
+		              		location.reload();
+		              	}else{
+		              		layer.alert('操作失败，请稍后重试',{icon:2});
+		              	}
+		              },
+		              error:function(data){
+		                  layer.alert('操作失败，请稍后重试',{icon:2});
+		              }
+		        });
+	        }
+
+        });
+        form.render();
+		  
+		/*事件*/
+		var active = {
+			add: function() {
+				admin.popup({
+					title: '设置积分可兑换现金比例',
+					area: ['450px', '250px'],
+					id: 'LAY-popup-user-add',
+					success: function(layero, index) {
+						view(this.id).render('system/integralRule').done(function() {
+							form.render();
+							form.on('submit(LAY-integralRule-front-submit)', function(data) {
+								var field = data.field; //获取提交的字段
+								console.log(field);
+								var integral = field.integral;
+								var money = field.money;
+								var bl = money+':'+integral;
+								$.ajax({
+				              		url:layui.setter.urll+'/api/admin/integral/rule/edit'
+				                	,method:"post"
+				              		,contentType:'application/json;charset=UTF-8'
+				              		,data: JSON.stringify({
+			              				'proportion':bl
+			              				,'token': layui.data('data').token
+				              		}),
+				                  	success:function(data){
+				                  		if(data.data==1){
+				                  			layer.alert('已设置',{icon:1});
+				                  		}else{
+				                  			layer.alert('操作失败，请稍后重试',{icon:2});
+				                  		}
+				                  	},
+				                  	error:function(data){
+				                      	layer.alert('操作失败，请稍后重试',{icon:2});
+				                  	}
+				              	});
+								layer.close(index);
+							});
+						});
+					}
+				});
+			}
+		};
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>
+

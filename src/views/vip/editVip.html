@@ -1,0 +1,104 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+
+    <!--id-->
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="hidden" name="id" value="{{ d.params.id || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--名称-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="name" value="{{ d.params.name || '' }}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--价格-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="price" value="{{ d.params.price || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--套餐说明-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">套餐说明</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="detail" value="{{ d.params.explain || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--图片-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">图片</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <img class="img" id="demo1" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.urll+ "/"+d.params.logoPath}}>
+                <input type="hidden" name="photo" id="demo2" value="{{d.params.logoPath}}" />
+            </script>
+        </div>
+    </div>
+
+    <!--编辑图片按钮-->
+    <div class="layui-upload">
+        <div class="layui-upload-list">
+            <button type="button" class="layui-btn" id="upPhoto" style="position: absolute;left: 228px;top: 210px;">编辑图片</button>
+        </div>
+    </div>
+
+
+    <!--可用积分额度-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">可用积分额度</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="integral" value="{{ d.params.quota || '' }}" placeholder="请输入" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+
+    <!--确认-->
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-vip-front-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+
+</div>
+
+<script>
+    layui.use(['admin', 'form', 'upload'], function() {
+        var $ = layui.$,
+            form = layui.form,
+            upload = layui.upload;
+
+        var uploadInst = upload.render({
+            elem: '#upPhoto',
+            url: layui.setter.urll + '/api/upload/image',
+            before: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $('#demo1').attr('src', result);
+                });
+            },
+            done: function(data) {
+                $('#demo2').val(data.data);
+            },
+            error: function() {
+                layer.msg('操作失败');
+            }
+        });
+    })
+</script>

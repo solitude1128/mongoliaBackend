@@ -1,0 +1,119 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>系统管理</cite></a>
+        <a><cite>套餐管理</cite></a>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+        </div>
+        <div class="layui-card-body">
+            <!--新建套餐-->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">新建套餐</button>
+            </div>
+            <!--数据表格-->
+            <table id="LAY-vip-manage" lay-filter="LAY-vip-manage"></table>
+            <!--套餐Logo-->
+            <script type="text/html" id="photo">
+                <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.urll +d.logoPath}}>
+            </script>
+            <!--是否上架-->
+            <script type="text/html" id="comboStatus">
+                {{# if(d.ifSale===1){ }}
+                <input type="checkbox" checked="" width="" name="open" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchCombo" lay-text="是|否"> {{# } else { }}
+                <input type="checkbox" name="close" width="" switch_id="{{d.id}}" lay-skin="switch" lay-filter="switchCombo" lay-text="是|否"> {{# } }}
+            </script>
+            <!--编辑-->
+            <script type="text/html" id="table-vip-operation">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+
+<!-- <div class="layui-card-body">
+
+    <table id="LAY-system-combo" lay-filter="LAY-system-combo"></table>
+
+
+    <script type="text/html" id="table-system-combo">
+        <button class="layui-btn layui-btn-normal layui-btn-xs">新建</button>
+        <button class="layui-btn layui-btn-normal layui-btn-xs">编辑</button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs">删除</button>
+    </script>
+
+</div> -->
+
+<script>
+    layui.use('system', layui.factory('system')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        form.render();
+
+        //事件
+        var active = {
+            add: function() {
+                admin.popup({
+                    title: '新建套餐',
+                    area: ['500px', '550px'],
+                    id: 'LAY-popup-user-add',
+                    success: function(layero, index) {
+                        view(this.id).render('vip/addVip').done(function() {
+                            form.render();
+                            form.on('submit(LAY-vip-front-submit)', function(data) {
+                                var field = data.field; //获取提交的字段
+                                $.ajax({
+                                    url: layui.setter.urll + '/api/admin/vip/add',
+                                    method: "post",
+                                    contentType: 'application/json;charset=UTF-8',
+                                    data: JSON.stringify({
+                                        'token': layui.data('data').token,
+                                        'name': field.name /*套餐名称*/ ,
+                                        'price': field.price /*套餐价格*/ ,
+                                        'logoPath': field.photo /*套餐图片*/ ,
+                                        'explain': field.detail /*套餐说明*/ ,
+                                        'quota': field.integralMax /*积分额度*/ ,
+                                        'ifSale': field.ifSale ? 1 : 0 /*是否上架*/
+                                    }),
+                                    success: function(data) {
+                                        if (data.data == 1) {
+                                            layer.msg('已添加', {
+                                                icon: 1
+                                            });
+                                            layui.table.reload('LAY-vip-manage');
+                                        } else {
+                                            layer.msg('添加失败，请稍后重试', {
+                                                icon: 2
+                                            });
+                                        }
+
+                                    },
+                                    error: function(data) {
+                                        layer.msg('添加失败，请稍后重试', {
+                                            icon: 2
+                                        });
+                                    }
+                                });
+                                layer.close(index);
+                            });
+                        });
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

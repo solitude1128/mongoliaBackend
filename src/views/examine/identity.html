@@ -1,0 +1,93 @@
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+  
+  <!--真实姓名-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">真实姓名</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input value="{{d.params.fullname || '暂无'}}" readonly="readonly" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--身份证号-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">身份证号</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input value="{{d.params.idNumber || '暂无'}}" readonly="readonly" placeholder="请输入" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  
+  <!--身份证图片-->
+  <!--<div class="layui-form-item">
+    <label class="layui-form-label">身份证图片</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <img class="img" style="display: inline-block; width: 250px; height: 130px;" src={{layui.setter.urll+"/"+d.params.idCardImg}}>
+      </script>
+    </div>
+  </div>-->
+  
+  <div class="layui-form-item">
+    <label class="layui-form-label">身份证图片</label>
+    <div class="layui-input-inline">
+      	<script type="text/html" template  lay-done="layui.data.groups(d);">
+	      	<input type="hidden" id="reportImage" name="reportImage" value="{{d.params.idCardImg}}" />
+	      	<div id="ri"></div>
+      	</script>
+    </div>
+  </div>
+	  
+  <!--确认-->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="LAY-detail-front-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+  
+</div>
+<script>
+		layui.use(['jquery'], function(){
+			var $ = layui.$
+		    ,jquery = layui.jquery;
+		    $('body').on('click','.img', function(){
+		        layer.open({
+		            type: 1,
+		            title: false,
+		            closeBtn: 0,
+		            area: 'auto',
+		            maxHeight: 600,
+		            maxWidth : 600,
+		            skin: 'layui-layer-nobg', //没有背景色
+		            shadeClose: true,
+		            content: '<img style="max-width: 600px;max-height: 600px;" src="'+$(this).attr('src')+'"/>'
+		        });
+		        e.stopPropagation();
+		    });
+		});
+
+    layui.data.groups = function (d) {
+    	layui.use(['admin', 'form', 'jquery','layer'], function () {
+        var $ = layui.$
+        ,jquery = layui.jquery
+        , form = layui.form;
+	        (function () {
+						var reportImage = $("#reportImage").val();
+						console.log(reportImage);
+						var reportImageList = reportImage.split(",");
+						var path = layui.setter.urll;
+						
+						console.log(reportImageList);
+						for (var i = 0; i < reportImageList.length; i++) {
+					        var ri = '<img class="img" style="display: inline-block; width: 250px; height: 130px;margin-top: 5px;" src="'+path+reportImageList[i]+'">';
+					        $('#ri').append(ri);
+					        form.render();
+			  		}
+					})();
+        })
+    };    
+</script>

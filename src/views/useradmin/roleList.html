@@ -1,0 +1,131 @@
+
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>权限管理</cite></a>
+		<a><cite>角色管理</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	
+	<div class="layui-card">
+		
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			
+			<div class="layui-form-item">
+
+				<!--角色名称-->
+				<div class="layui-inline">
+					<label class="layui-form-label">角色名称</label>
+					<div class="layui-input-block">
+						<input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<!--搜索按钮-->
+				<div class="layui-inline">
+					<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-role-front-search">
+			            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+			        </button>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="layui-card-body">
+			<!--新增角色-->
+			<div style="padding-bottom: 10px;">
+				<button class="layui-btn layuiadmin-btn-useradmin" data-type="add">新增角色</button>
+			</div>
+			
+			<!--数据表格-->
+			<table id="LAY-user-back-role" lay-filter="LAY-user-back-role"></table>
+			
+			<!--编辑-->
+			<script type="text/html" id="table-role-webuser">
+				<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+			</script>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
+		var $ = layui.$,
+			admin = layui.admin,
+			view = layui.view,
+			table = layui.table,
+			laydate = layui.laydate,
+			form = layui.form;
+			form.render();
+		  
+		/*监听搜索*/
+		form.on('submit(LAY-role-front-search)', function(data) {
+			var field = data.field;
+			console.log(field);
+			table.reload('LAY-user-back-role', {
+				url: layui.setter.urll + '/api/admin/auth/role/search',
+				method: 'get',
+				where: field,
+				page: true
+			});
+		});
+
+		//事件
+		var active = {
+			add: function() {
+				admin.popup({
+					title: '新增角色',
+					area: ['500px', '600px'],
+					id: 'LAY-popup-user-add',
+					success: function(layero, index) {
+						view(this.id).render('useradmin/addRole').done(function() {
+							form.render();
+							form.on('submit(LAY-role-front-submit)', function(data) {
+								var field = data.field; //获取提交的字段
+								console.log(field);
+								var id = '';
+					            $("input:checkbox[name='checkbox']:checked").each(function (i) {
+					                id += $(this).attr('id') + ',';
+					            });
+					            id = id.slice(0, -1);
+					            console.log(id);/*勾选的权限id*/
+								$.ajax({
+					              	url:layui.setter.urll+'/api/admin/auth/role/add'
+					                ,method:"post"
+					              	,contentType:'application/json;charset=UTF-8'
+					              	,data: JSON.stringify({
+					              		 'token': layui.data('data').token
+					              		,'rolesName':field.roleName	/*角色名称*/
+					              		,'authId':id				/*角色权限*/
+					              	}),
+					                  success:function(data){
+					                  	if(data.data==1){
+					                  		layer.alert('已添加',{icon:1});
+					                  		layui.table.reload('LAY-user-back-role');
+					                  	}else{
+					                  		layer.alert('添加失败，请稍后重试',{icon:2});
+					                  	}
+					                  },
+					                  error:function(data){
+					                      layer.alert('添加失败，请稍后重试',{icon:2});
+					                  }
+					              });
+								layer.close(index);
+							});
+						});
+					}
+				});
+			}
+		};
+
+		$('.layui-btn.layuiadmin-btn-useradmin').on('click', function() {
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
+	});
+</script>

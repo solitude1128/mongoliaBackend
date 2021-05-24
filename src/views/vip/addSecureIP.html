@@ -1,0 +1,259 @@
+<style>
+    /* 下拉多选样式 需要引用*/
+    
+    select[multiple]+.layui-form-select>.layui-select-title>input.layui-input {
+        border-bottom: 0
+    }
+    
+    select[multiple]+.layui-form-select dd {
+        padding: 0;
+    }
+    
+    select[multiple]+.layui-form-select .layui-form-checkbox[lay-skin=primary] {
+        margin: 0 !important;
+        display: block;
+        line-height: 36px !important;
+        position: relative;
+        padding-left: 26px;
+    }
+    
+    select[multiple]+.layui-form-select .layui-form-checkbox[lay-skin=primary] span {
+        line-height: 36px !important;
+        padding-left: 10px;
+        float: none;
+    }
+    
+    select[multiple]+.layui-form-select .layui-form-checkbox[lay-skin=primary] i {
+        position: absolute;
+        left: 10px;
+        top: 0;
+        margin-top: 9px;
+    }
+    
+    .multiSelect {
+        line-height: normal;
+        height: auto;
+        padding: 4px 10px;
+        overflow: hidden;
+        min-height: 38px;
+        margin-top: -38px;
+        left: 0;
+        z-index: 99;
+        position: relative;
+        background: none;
+    }
+    
+    .multiSelect a {
+        padding: 2px 5px;
+        background: #908e8e;
+        border-radius: 2px;
+        color: #fff;
+        display: block;
+        line-height: 20px;
+        height: 20px;
+        margin: 2px 5px 2px 0;
+        float: left;
+    }
+    
+    .multiSelect a span {
+        float: left;
+    }
+    
+    .multiSelect a i {
+        float: left;
+        display: block;
+        margin: 2px 0 0 2px;
+        border-radius: 2px;
+        width: 8px;
+        height: 8px;
+        padding: 4px;
+        position: relative;
+        -webkit-transition: all .3s;
+        transition: all .3s
+    }
+    
+    .multiSelect a i:before,
+    .multiSelect a i:after {
+        position: absolute;
+        left: 8px;
+        top: 2px;
+        content: '';
+        height: 12px;
+        width: 1px;
+        background-color: #fff
+    }
+    
+    .multiSelect a i:before {
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg)
+    }
+    
+    .multiSelect a i:after {
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg)
+    }
+    
+    .multiSelect a i:hover {
+        background-color: #545556;
+    }
+    
+    .multiOption {
+        display: inline-block;
+        padding: 0 5px;
+        cursor: pointer;
+        color: #999;
+    }
+    
+    .multiOption:hover {
+        color: #5FB878
+    }
+    
+    .iconfont {
+        font-family: "iconfont" !important;
+        font-size: 16px;
+        font-style: normal;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .icon-fanxuan:before {
+        content: "\e837";
+    }
+    
+    .icon-quanxuan:before {
+        content: "\e623";
+    }
+    
+    .icon-qingkong:before {
+        content: "\e63e";
+    }
+</style>
+
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+    <!--授权固定IP地址-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">授权固定IP地址</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="ip" lay-verify="required" placeholder="请输入固定ip地址" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <!--授权单位-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">授权单位</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="licenseUnits" lay-verify="required" placeholder="请输入授权单位" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <!--起止时间-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">起止时间</label>
+        <div class="layui-input-inline">
+            <input class="layui-input layui-input-inline" style="width: 400px;" name="startTime" lay-verify="required" id="transactionTime" placeholder="起止时间" autocomplete="off">
+        </div>
+    </div>
+    <!--用户-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择用户</label>
+        <div class="layui-input-inline" id="storeOptions">
+            <select name="selectUsers" lay-tools lay-omit multiple>
+                <option value="">默认全部</option>
+            </select>
+        </div>
+    </div>
+    <!--用户所有值的数量-->
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+            <input type="hidden" name="count" id="count">
+        </div>
+    </div>
+    <!--金额-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">金额</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="price" lay-verify="required" placeholder="请输入金额" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <!--联系人-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">联系人</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="uname" lay-verify="required" placeholder="请输入联系人" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <!--联系电话-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" lay-verify="phone" maxlength="11" name="phone" placeholder="请输入联系电话" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+
+    <!--确认-->
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" id="send" lay-submit lay-filter="LAY-secureIP-front-submit" value="确认" class="layui-btn">
+        </div>
+    </div>
+
+</div>
+
+<script>
+    layui.use(['admin', 'form', 'code', 'upload', 'layedit', 'laydate'], function() {
+        var $ = layui.$,
+            form = layui.form,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            laydate = layui.laydate;
+
+
+        $.ajax({
+            url: layui.setter.urll + '/api/admin/user/list',
+            method: "get",
+            data: {
+                "token": layui.data('data').token,
+                "page": 1,
+                "limit": 99999
+            },
+            success: function(data) {
+                $("#count").val(data.count)
+                var dom = storeOptions.querySelector("select");
+                data.data.map(ele => {
+                    dom.appendChild((() => {
+                        var opt = document.createElement("option");
+                        opt.innerHTML = ele.nickname;
+                        return opt;
+                    })())
+                })
+                form.render();
+            },
+            error: function(data) {
+                location.reload()
+            }
+        });
+
+        var index = layedit.build('demo', {
+            tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right']
+        });
+        $("#send").on('click', function() {
+            var text = layedit.getContent(index);
+            var content = $("#description").val(text);
+        });
+        laydate.render({
+            elem: '#transactionTime',
+            type: 'datetime',
+            range: true,
+            format: 'yyyy-MM-dd HH:mm:ss'
+        });
+    });
+</script>
