@@ -85,9 +85,19 @@
                                         'phone': field.tel /*联系方式*/
                                     }),
                                     success: function(data) {
-                                        layer.alert('已添加,您的登录账号为   ' + data.data + '  请妥善保管。', {
-                                            icon: 1
-                                        });
+                                        if (data.code == 402) {
+                                            layer.alert('该手机号已被注册', {
+                                                icon: 2
+                                            });
+                                        } else if (data.code == 200) {
+                                            layer.alert('已添加,您的登录账号为   ' + data.data + '  请妥善保管。', {
+                                                icon: 1
+                                            });
+                                        } else {
+                                            layer.alert(data.data, {
+                                                icon: 2
+                                            });
+                                        }
                                         layui.table.reload('LAY-user-back-manage');
                                     },
                                     error: function(data) {

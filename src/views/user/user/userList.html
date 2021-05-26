@@ -156,6 +156,11 @@
                 {{# if(d.birthday==null || d.birthday==""){ }} 暂无 {{# } else { }} {{d.birthday}} {{# } }}
             </script>
 
+            <!--是否主播-->
+            <script type="text/html" id="anchor">
+                {{# if(d.anchor==null || d.anchor==""){ }} 否 {{# } else { }} 是 {{# } }}
+            </script>
+
             <!--会员到期时间-->
             <script type="text/html" id="vipDueTime">
                 {{# if(d.vipDueTime==null || d.vipDueTime==""){ }} 暂无 {{# } else { }} {{d.vipDueTime}} {{# } }}
@@ -166,8 +171,9 @@
                 <a class="layui-btn layui-btn-xs" lay-event="thawAccount">解冻账号</a> {{# } else { }}
                 <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="frozenAccount">冻结账号</a> {{# } }} {{# if(d.comState==1){ }}
                 <a class="layui-btn layui-btn-xs" lay-event="thawComment">解冻评论功能</a> {{# } else { }}
-                <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="frozenComment">冻结评论功能</a> {{# } }}
-                <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="frozenComment">冻结评论功能</a> {{# } }} {{# if(d.comState==1){ }}<a class="layui-btn layui-btn-xs" lay-event="recover"><i class="layui-icon layui-icon-delete"></i>恢复</a> {{# } else
+                { }}
+                <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a> {{# } }}
                 <button id="all" class="layui-btn layui-btn-xs layuiadmin-btn-useradmin" lay-event="allOptions">其他操作</button>
             </script>
         </div>
@@ -224,6 +230,9 @@
                     city: field.address.replace(/\s*/g, "") /*地区*/ ,
                     age: field.age.replace(/\s*/g, "") /*年龄*/ ,
                     flag: field.isVip /*是否会员*/ ,
+                    onLine: field.onLine /*在线时长*/ ,
+                    listenIn: field.listenIn /*收听时长*/ ,
+                    integral: field.integral /*积分*/ ,
                     start: rt[0] /*注册起始时间*/ ,
                     end: rt[1] /*注册结束时间*/ ,
                     signStart: lt[0] /*登录起始时间*/ ,

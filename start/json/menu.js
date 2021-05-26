@@ -2,139 +2,43 @@
     "code": 200,
     "message": "success",
     "data": [{
-            "name": "user",
-            "title": "用户管理",
-            "icon": "layui-icon-user",
-            "jump": "user/user/userList"
-        }, {
-            "name": "finance",
-            "title": "财务管理",
-            "icon": "layui-icon-component",
+            "name": "audio",
+            "title": "音频管理",
+            "icon": "layui-icon-senior",
             "list": [{
-                "name": "finance",
-                "title": "支付记录",
-                "icon": "layui-icon-user",
-                "jump": "finance/financeList"
+                "name": "Catalog",
+                "title": "音频目录",
+                "jump": "audio/catalogList"
             }]
         }, {
-            "name": "advertisement",
-            "title": "广告管理",
-            "icon": "layui-icon-read",
+            "name": "broadcasting",
+            "title": "电台管理",
+            "icon": "layui-icon-console",
             "list": [{
-                "name": "banner-list",
-                "title": "启动页广告",
-                "jump": "advertisement/startAppAdv"
+                "name": "radioStation",
+                "title": "电台列表",
+                "jump": "radioStation/radioStationList"
             }, {
-                "name": "banner-list",
-                "title": "首页轮播图",
-                "jump": "advertisement/advertisementList"
-            }, {
-                "name": "administrators-list",
-                "title": "音频广告",
-                "jump": "advertisement/audioAdv"
-            }, {
-                "name": "administrators-list",
-                "title": "目录广告",
-                "jump": "advertisement/dirAdv"
+                "name": "radioStationAudio",
+                "title": "添加音频",
+                "jump": "radioStation/editRadioStation"
             }]
         }, {
-            "name": "useradmin",
-            "title": "权限管理",
-            "icon": "layui-icon-template",
+            "name": "radioStation",
+            "title": "动态管理",
+            "icon": "layui-icon-console",
             "list": [{
-                "name": "useradmin",
-                "title": "管理员管理",
-                "jump": "useradmin/administratorsList"
-            }, {
-                "name": "useradmin",
-                "title": "角色管理",
-                "jump": "useradmin/roleList"
-            }]
-        }, {
-            "name": "msg",
-            "title": "消息管理",
-            "icon": "layui-icon-dialogue",
-            "list": [{
-                "name": "message-add",
-                "title": "新增消息",
-                "jump": "message/newAddMessage"
-            }]
-        }, {
-            "name": "content",
-            "title": "内容管理",
-            "icon": "layui-icon-notice",
-            "list": [{
-                "name": "dynamic-list",
-                "title": "动态管理",
+                "name": "radioStation",
+                "title": "动态列表",
                 "jump": "content/dynamicList"
-            }]
-        }, {
-            "name": "comment",
-            "title": "评论管理",
-            "icon": "layui-icon-template-1",
-            "list": [{
-                "name": "comment-list",
-                "title": "评论列表",
-                "jump": "comment/commentList"
-            }]
-        }, {
-            "name": "senior",
-            "title": "系统管理",
-            "icon": "layui-icon-set",
-            "list": [{
-                "name": "aboutUs",
-                "title": "关于我们",
-                "jump": "system/aboutUs"
             }, {
-                "name": "feedback",
-                "title": "意见反馈",
-                "jump": "system/feedback"
-            }, {
-                "name": "echarts",
-                "title": "常见问题",
-                "jump": "system/problem"
-            }, {
-                "name": "administrators-list",
-                "title": "消息列表",
-                "jump": "message/list"
-            }, {
-                "name": "administrators-rule",
-                "title": "举报管理",
-                "jump": "system/reportList"
-            }, {
-                "name": "task",
-                "title": "任务列表",
-                "jump": "task/taskList"
-            }, {
-                "name": "echarts",
-                "title": "积分管理",
-                "jump": "system/integralManager"
-            }, {
-                "name": "echarts",
-                "title": "联系我们",
-                "jump": "system/contactUs"
-            }, {
-                "name": "echarts",
-                "title": "用户协议",
-                "jump": "system/userAgreement"
-            }]
-        },
-        {
-            "name": "examine1",
-            "title": "审核管理",
-            "icon": "layui-icon-app",
-            "list": [{
-                "name": "examine1",
-                "title": "信息认证审核列表",
-                "jump": "examine/informationList"
-            }, {
-                "name": "dynamic11",
-                "title": "动态审核列表",
+                "name": "radioStationAudio",
+                "title": "动态审核",
                 "jump": "examine/dynamicList"
             }, {
-                "name": "actorExamine",
-                "title": "艺人审核列表",
-                "jump": "examine/artist"
+                "name": "hotManage",
+                "title": "热门规则",
+                "jump": "dynamic/setDynamicRole"
             }]
         },
         {
@@ -156,6 +60,75 @@
                 "jump": "classification/classificationList"
             }]
         }, {
+            "name": "user",
+            "title": "用户管理",
+            "icon": "layui-icon-user",
+            "list": [{
+                "name": "userList",
+                "title": "用户列表",
+                "jump": "user/user/userList"
+            }, {
+                "name": "examine",
+                "title": "信息认证审核",
+                "jump": "examine/informationList"
+            }]
+        }, {
+            "name": "artist",
+            "title": "艺人管理",
+            "icon": "layui-icon-app",
+            "list": [{
+                "name": "artistList",
+                "title": "艺人列表",
+                "jump": "examine/artist"
+            }, {
+                "name": "actorExamine",
+                "title": "艺人审核",
+                "jump": "examine/artist"
+            }]
+        }, {
+            "name": "comment",
+            "title": "评论管理",
+            "icon": "layui-icon-template-1",
+            "list": [{
+                "name": "comment-list",
+                "title": "评论列表",
+                "jump": "comment/commentList"
+            }]
+        }, {
+            "name": "msg",
+            "title": "消息管理",
+            "icon": "layui-icon-dialogue",
+            "list": [{
+                "name": "message-add",
+                "title": "新增消息",
+                "jump": "message/newAddMessage"
+            }, {
+                "name": "administrators-list",
+                "title": "消息列表",
+                "jump": "message/list"
+            }]
+        }, {
+            "name": "advertisement",
+            "title": "广告管理",
+            "icon": "layui-icon-read",
+            "list": [{
+                "name": "banner-list",
+                "title": "首页轮播图",
+                "jump": "advertisement/advertisementList"
+            }, {
+                "name": "banner-list",
+                "title": "启动页广告",
+                "jump": "advertisement/startAppAdv"
+            }, {
+                "name": "administrators-list",
+                "title": "音频广告",
+                "jump": "advertisement/audioAdv"
+            }, {
+                "name": "administrators-list",
+                "title": "封面广告",
+                "jump": "advertisement/dirAdv"
+            }]
+        }, {
             "name": "vip",
             "title": "VIP管理",
             "icon": "layui-icon-note",
@@ -169,51 +142,68 @@
                 "jump": "vip/vipList"
             }, {
                 "name": "secureIP",
-                "title": "固定ip会员",
+                "title": "固定IP会员",
                 "jump": "vip/secureIP"
             }]
         }, {
-            "name": "audio",
-            "title": "音频管理",
-            "icon": "layui-icon-senior",
+            "name": "finance",
+            "title": "财务管理",
+            "icon": "layui-icon-component",
             "list": [{
-                "name": "Catalog",
-                "title": "音频目录",
-                "jump": "audio/catalogList"
+                "name": "finance",
+                "title": "支付记录",
+                "icon": "layui-icon-user",
+                "jump": "finance/financeList"
             }]
         }, {
-            "name": "broadcasting",
-            "title": "电台分类管理",
-            "icon": "layui-icon-console",
+            "name": "useradmin",
+            "title": "权限管理",
+            "icon": "layui-icon-template",
             "list": [{
-                "name": "radioStation",
-                "title": "电台分类",
-                "jump": "radioStation/radioStationList"
+                "name": "useradmin",
+                "title": "管理员管理",
+                "jump": "useradmin/administratorsList"
             }, {
-                "name": "radioStationAudio",
-                "title": "添加音频",
-                "jump": "radioStation/editRadioStation"
+                "name": "useradmin",
+                "title": "角色管理",
+                "jump": "useradmin/roleList"
             }]
         }, {
-            "name": "radioStation",
-            "title": "动态管理",
-            "icon": "layui-icon-console",
+            "name": "senior",
+            "title": "系统管理",
+            "icon": "layui-icon-set",
             "list": [{
-                "name": "radioStation",
-                "title": "动态用户",
-                "jump": "dynamic/vtbList"
+                "name": "aboutUs",
+                "title": "关于我们",
+                "jump": "system/aboutUs"
             }, {
-                "name": "radioStationAudio",
-                "title": "审核管理",
-                "jump": "examine/informationList"
+                "name": "feedback",
+                "title": "意见反馈",
+                "jump": "system/feedback"
             }, {
-                "name": "hotManage",
-                "title": "热门管理",
-                "jump": "examine/informationList"
+                "name": "echarts",
+                "title": "常见问题",
+                "jump": "system/problem"
             }, {
-                "name": "radioStationAudio",
-                "title": "审核管理",
-                "jump": "examine/informationList"
+                "name": "administrators-rule",
+                "title": "举报管理",
+                "jump": "system/reportList"
+            }, {
+                "name": "task",
+                "title": "任务管理",
+                "jump": "task/taskList"
+            }, {
+                "name": "echarts",
+                "title": "积分管理",
+                "jump": "system/integralManager"
+            }, {
+                "name": "echarts",
+                "title": "联系我们",
+                "jump": "system/contactUs"
+            }, {
+                "name": "echarts",
+                "title": "用户协议",
+                "jump": "system/userAgreement"
             }]
         }
     ]

@@ -25,9 +25,7 @@
         <div class="layui-input-inline">
             <script type="text/html" template>
                 <input type="hidden" id="classId" value="{{d.params.classId}}" />
-                <textarea name="catalogIntroduce" style="resize:none;width: 280px;height: 100px;" autocomplete="off" class="layui-input">
-        	{{d.params.introduce}}
-        </textarea>
+                <textarea name="catalogIntroduce" value="" style="resize:none;width: 280px;height: 100px;" autocomplete="off" class="layui-input">{{d.params.introduce}}</textarea>
             </script>
         </div>
     </div>
@@ -90,36 +88,14 @@
     <div class="layui-form-item">
         <label class="layui-form-label">朗诵者</label>
         <div class="layui-input-block">
-            <select name="多选+搜索+大小写不敏感" lay-verify="required" lay-search>
-                <option value="">请选择您的兴趣爱好</option>
-                <option>sing1</option>
-                <option selected>sing2</option>
-                <option>SING1-大写</option>
-                <option>movie1</option>
-                <option selected>movie2</option>
-                <option>movie3</option>
-                <option>MOVIE4</option>
-                <option>swim</option>
-                <option>moon</option>
-            </select>
+            <select name="reciter" id="artistId" lay-verify="required" lay-search></select>
         </div>
     </div>
     <!--朗诵者-->
     <div class="layui-form-item">
         <label class="layui-form-label">作者</label>
         <div class="layui-input-block">
-            <select name="多选+搜索+大小写不敏感" lay-verify="required" lay-search>
-                <option value="">请选择您的兴趣爱好</option>
-                <option>sing1</option>
-                <option selected>sing2</option>
-                <option>SING1-大写</option>
-                <option>movie1</option>
-                <option selected>movie2</option>
-                <option>movie3</option>
-                <option>MOVIE4</option>
-                <option>swim</option>
-                <option>moon</option>
-            </select>
+            <select name="uid" lay-verify="required" id="authorId" lay-search></select>
         </div>
     </div>
     <!--确认-->
@@ -209,6 +185,55 @@
             }
         });
 
+
+        openSelectModel(
+            $,
+            form, {
+                id: "#artistId",
+                valueName: "artistId",
+                labelName: "aname"
+            },
+            function searchAudio(str, callback) {
+                $.ajax({
+                    url: layui.setter.urll + "api/admin/artist/selectArtistName",
+                    method: "get",
+                    contentType: "application/json;charset=UTF-8",
+                    data: {
+                        token: layui.data("data").token,
+                        page: 1,
+                        limit: 20,
+                        name: str,
+                    },
+                    success: function(data) {
+                        callback && callback(data);
+                    },
+                });
+            }
+        );
+        openSelectModel(
+            $,
+            form, {
+                id: "#authorId",
+                valueName: "artistId",
+                labelName: "aname"
+            },
+            function searchAudio(str, callback) {
+                $.ajax({
+                    url: layui.setter.urll + "api/admin/artist/selectArtistScreen",
+                    method: "get",
+                    contentType: "application/json;charset=UTF-8",
+                    data: {
+                        token: layui.data("data").token,
+                        page: 1,
+                        limit: 20,
+                        name: str,
+                    },
+                    success: function(data) {
+                        callback && callback(data);
+                    },
+                });
+            }
+        );
     })
 
     /*目录标签选中默认*/

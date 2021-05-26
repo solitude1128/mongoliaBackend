@@ -21,7 +21,7 @@
 
             <!--轮播图-->
             <script type="text/html" id="imgTpl">
-                <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.imgUrl+ "/"+d.imgUrl}}>
+                <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.imgUrl+ "/" + d.imgPath}}>
             </script>
 
             <!--编辑、删除-->
@@ -154,7 +154,7 @@
                                                 )
                                             ),
                                             success: function(data) {
-                                                if (data.data == 1) {
+                                                if (data.code == 200) {
                                                     layer.alert("已添加", {
                                                         icon: 1
                                                     });

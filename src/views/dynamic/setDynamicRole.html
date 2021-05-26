@@ -1,0 +1,75 @@
+<div class="layui-card layadmin-header">
+	<div class="layui-breadcrumb" lay-filter="breadcrumb">
+		<a lay-href="">主页</a>
+		<a><cite>动态管理</cite></a>
+		<a><cite>热门规则</cite></a>
+	</div>
+</div>
+
+<div class="layui-fluid">
+	<div class="layui-card">
+		<!--id-->
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+			<!--热门规则-->
+			<div class="layui-inline" style="width: 245px">
+				<label class="layui-form-label">选择规则</label>
+				<div class="layui-input-block">
+					<select name="flag" id="flag" lay-verify="required">
+						<option value="0">播放量</option>
+						<option value="1">点赞数</option>
+						<option value="2">评论数</option>
+					</select>
+				</div>
+			</div>
+			<!--确定按钮-->
+			<div class="layui-inline" style="margin-left: 25px">
+				<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-dynamic-front-role">
+					<i class="layui-icon layui-icon-lock layuiadmin-button-btn">确定</i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	layui
+		.use("dynamic", layui.factory("dynamicSetRole"))
+		.use(["admin", "useradmin", "table", "laydate", "form"], function () {
+			var $ = layui.$,
+				admin = layui.admin,
+				view = layui.view,
+				table = layui.table,
+				laydate = layui.laydate,
+				form = layui.form;
+			form.render();
+			form.on("submit(LAY-dynamic-front-role)", function (data) {
+				var field = data.field;
+				$.ajax({
+					url: layui.setter.urll + "/api/admin/hotRul/udateHotRules?token="+ layui.data("data").token,
+					method: "post",
+					contentType: "application/json;charset=UTF-8",
+					data: JSON.stringify({
+						token: layui.data("data").token,
+						flag: field.flag,
+					}),
+					success: function (data) {
+						if (data.data == 1) {
+							layer.alert("修改成功", {
+								icon: 1,
+							});
+							layui.table.reload("LAY-dynamic-manage");
+						} else {
+							layer.alert("修改失败，请稍后重试", {
+								icon: 2,
+							});
+						}
+					},
+					error: function (data) {
+						layer.alert("修改失败，请稍后重试", {
+							icon: 2,
+						});
+					},
+				});
+			});
+		});
+</script>

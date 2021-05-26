@@ -1,6 +1,13 @@
 <div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
-
-    <!--轮播图名称-->
+    <!--id-->
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="hidden" name="id" id="id" value="{{ d.params.id || '' }}" placeholder="请输入" autocomplete="off" class="layui-input" />
+            </script>
+        </div>
+    </div>
+    <!--启动页名称-->
     <div class="layui-form-item">
         <label class="layui-form-label">启动页名称</label>
         <div class="layui-input-inline">
@@ -10,21 +17,21 @@
         </div>
     </div>
 
-    <!--标题-->
+    <!--广告时长-->
+    <div class="layui-form-item">
+        <label class="layui-form-label" id="text">广告时长</label>
+        <div class="layui-input-inline">
+            <input type="text" name="advertTime" id="searchAudio" lay-verify="required" placeholder="秒" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <!--外链-->
     <div class="layui-form-item">
         <label class="layui-form-label">广告外链</label>
         <div class="layui-input-inline">
             <script type="text/html" template>
                 <input type="text" name="advertPath" placeholder="请输入" lay-verify="required" autocomplete="off" class="layui-input">
             </script>
-        </div>
-    </div>
-
-    <!--搜索音频-->
-    <div class="layui-form-item">
-        <label class="layui-form-label" id="text">广告时长</label>
-        <div class="layui-input-inline">
-            <input type="text" name="advertTime" id="searchAudio" lay-verify="required" placeholder="秒" autocomplete="off" class="layui-input">
         </div>
     </div>
     <!--联系人-->

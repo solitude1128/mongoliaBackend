@@ -101,6 +101,11 @@
                 <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.urll+ "/"+d.avatar}}>
             </script>
 
+            <!--动态音频-->
+            <script type="text/html" id="content">
+                <audio controls="controls" style="width: 300px;height: 30px;" src="{{layui.setter.urll+ " / "+d.content}}"></audio>
+            </script>
+
             <!--编辑、删除-->
             <script type="text/html" id="table-dynamic-operation">
                 <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
@@ -135,7 +140,6 @@
 </div>
 
 <script>
-    alert(1)
     layui.use('content', layui.factory('content')).use(['admin', 'useradmin', 'table', 'laydate', 'form'], function() {
         var $ = layui.$,
             admin = layui.admin,

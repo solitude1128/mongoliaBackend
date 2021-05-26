@@ -49,14 +49,14 @@ layui.define(["table", "form"], function(exports) {
             [
                 { field: "name", title: "启动页名称", align: "center" },
                 { field: "adState", title: "状态", align: "center", templet: "#topLowerStatus" },
-                { field: "imgTitle", title: "广告时长", align: "center" },
-                { field: "imgSort", title: "排序", align: "center" },
+                { field: "advertTime", title: "广告时长", align: "center" },
+                // { field: "imgSort", title: "排序", align: "center" },
                 { field: "imgPath", title: "图片", align: "center", templet: "#imgTpl" },
                 // ,{field: 'createTime', 	title: '上传时间',	align:'center'}
                 { field: "advertPath", title: "外链", align: "center", templet: "#toLink" },
                 { field: "contacts", title: "联系人", align: "center" },
                 { field: "conPhone", title: "联系人手机号", align: "center" },
-                { title: "操作", align: "center", toolbar: "#table-advertisement-operation" },
+                { title: "操作", align: "center", toolbar: "#table-startAppAdv-operation" },
             ],
         ],
         page: true,
@@ -72,7 +72,95 @@ layui.define(["table", "form"], function(exports) {
         },
     });
 
-    /*监听编辑、删除操作*/
+    /*监听编辑、删除启动页操作*/
+    table.on("tool(LAY-startAppAdv-manage)", function(obj) {
+        var data = obj.data;
+        console.log(data);
+        if (obj.event === "del") {
+            layer.confirm("是否确认删除?", function(index) {
+                $.ajax({
+                    url: layui.setter.urll + "/api/admin/banner/del",
+                    method: "post",
+                    contentType: "application/json;charset=UTF-8",
+                    data: JSON.stringify({
+                        token: layui.data("data").token,
+                        id: data.id,
+                    }),
+                    success: function(data) {
+                        if (data.code == 403) {
+                            layer.closeAll();
+                            admin.exit();
+                            setTimeout(function() {
+                                layer.alert("此账号已在别处登录,请重新登录！", { icon: 5 });
+                            }, 666);
+                        }
+                        if (data.data == 1) {
+                            layer.alert("已删除", { icon: 1 });
+                            layui.table.reload("LAY-advertisement-manage");
+                        } else {
+                            layer.alert("删除失败,请稍后重试", { icon: 2 });
+                        }
+                    },
+                    error: function(data) {
+                        layer.alert("操作失败", { icon: 2 });
+                    },
+                });
+                layer.close(index);
+            });
+        } else if (obj.event === "edit") {
+            admin.popup({
+                title: "编辑",
+                area: ["500px", "450px"],
+                id: "LAY-popup-user-add",
+                success: function(layero, index) {
+                    view(this.id)
+                        .render("advertisement/editAdver", data)
+                        .done(function() {
+                            form.on("submit(LAY-startAppAdv-front-submit)", function(data) {
+                                var field = data.field;
+                                console.log(field);
+                                $.ajax({
+                                    url: layui.setter.urll + "/api/admin/advert/updataAdvert",
+                                    method: "post",
+                                    contentType: "application/json;charset=UTF-8",
+                                    data: JSON.stringify({
+                                        token: layui.data("data").token,
+                                        id: field.id /*id*/ ,
+                                        name: field.name /*广告名称*/ ,
+                                        advertTime: field.title /*广告时长*/ ,
+                                        advertPath: field.advertPath /*广告外链*/ ,
+                                        contacts: field.contacts /*联系人*/ ,
+                                        conPhone: field.conPhone /*联系电话*/ ,
+                                        imgPath: field.imgPath, //图片
+                                    }),
+                                    success: function(data) {
+                                        if (data.data == 1) {
+                                            layer.alert("已更新", { icon: 1 });
+                                            layui.table.reload("LAY-advertisement-manage");
+                                        } else {
+                                            layer.alert("编辑失败，请稍后重试", { icon: 2 });
+                                        }
+                                        if (data.code == 403) {
+                                            layer.closeAll();
+                                            admin.exit();
+                                            setTimeout(function() {
+                                                layer.alert("此账号已在别处登录,请重新登录！", { icon: 5 });
+                                            }, 666);
+                                        }
+                                    },
+                                    error: function(data) {
+                                        layer.alert("编辑失败，请稍后重试", { icon: 2 });
+                                    },
+                                });
+                                layer.close(index);
+                            });
+                        });
+                },
+            });
+        }
+    });
+
+    /*监听编辑、删除轮播图操作*/
     table.on("tool(LAY-advertisement-manage)", function(obj) {
         var data = obj.data;
         console.log(data);

@@ -56,7 +56,7 @@ layui.define(['table', 'form'], function(exports) {
                             }
                         }
                     }
-                }, { field: 'integral', title: '积分', align: 'center' }, { field: 'isVip', title: '是否会员', align: 'center', width: '90', templet: '#isVip' }, { field: 'isVTB', title: '是否主播', align: 'center', templet: '#isVTB', width: '90' }, { field: 'vipDueTime', title: '会员到期时间', align: 'center', templet: '#vipDueTime', width: '120' }, { fixed: 'right', title: '操作', align: 'center', width: 340, toolbar: '#table-useradmin-webuser' }
+                }, { field: 'integral', title: '积分', align: 'center' }, { field: 'isVip', title: '是否会员', align: 'center', width: '90', templet: '#isVip' }, { field: 'anchor', title: '是否主播', align: 'center', templet: '#anchor', width: '90' }, { field: 'vipDueTime', title: '会员到期时间', align: 'center', templet: '#vipDueTime', width: '120' }, { fixed: 'right', title: '操作', align: 'center', width: 340, toolbar: '#table-useradmin-webuser' }
             ]
         ],
         page: true,

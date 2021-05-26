@@ -87,7 +87,7 @@
         <div class="layui-card-body">
             <div style="padding-bottom: 10px">
                 <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">新增目录</button>
-                <button class="layui-btn layuiadmin-btn-useradmin" data-type="setHot">热门规则</button>
+                <button class="layui-btn layuiadmin-btn-useradmin" lay-href="audio/setCatalog">热门规则</button>
             </div>
 
             <!--数据表格-->
@@ -98,7 +98,15 @@
                 <img class="img" style="display: inline-block; width: 30px; height: 30px;" src={{layui.setter.imgUrl + d.imagePath}}>
             </script>
             <script type="text/html" id="totalTime">
-                <span>{{ parseInt(d.totalTime/60000)+"分钟"+parseInt(d.totalTime%60000/1000)+"秒" }}</span>
+                <span>{{ d.totalTime>60 ? (parseInt(d.totalTime/60)+'分钟'+((d.totalTime-(parseInt(d.totalTime/60)*60))+'秒')):((d.totalTime || 0)+ "秒") }}</span>
+            </script>
+            <!-- 播放次数 -->
+            <script type="text/html" id="playNum">
+                <span>{{ d.playNum || 0 }}</span>
+            </script>
+            <!-- 购买总额 -->
+            <script type="text/html" id="sum">
+                <span>{{ d.sum || 0 }}</span>
             </script>
 
             <!--音频标签-->
@@ -108,151 +116,207 @@
 
                     <!--编辑、删除-->
                     <script type="text/html" id="table-catalog-operation">
-                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑目录</a
-				>
-				<a class="layui-btn layui-btn-xs" lay-href="audio/viewAudioPlayList/id={{d.id}}">播放列表</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>
+							编辑目录
+							</a>
+                        <a class="layui-btn layui-btn-xs" lay-href="audio/viewAudioPlayList/id={{d.id}}">播放列表</a>
                         <a class="layui-btn layui-btn-xs" lay-href="audio/viewAudioCommentList/id={{d.id}}">评论列表</a>
                         <a class="layui-btn layui-btn-xs" lay-href="audio/viewAudioDownLoadList/id={{d.id}}">下载列表</a>
                         <a class="layui-btn layui-btn-xs" lay-href="audio/viewAudioLikeList/id={{d.id}}">点赞列表</a>
-                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a
-				>
-			</script>
-		</div>
-	</div>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                    </script>
+        </div>
+    </div>
 </div>
 
 <script>
-	layui.use("audio", layui.factory("audio")).use(["admin", "useradmin", "table", "laydate", "form"], function () {
-		var $ = layui.$,
-			admin = layui.admin,
-			view = layui.view,
-			table = layui.table,
-			laydate = layui.laydate,
-			form = layui.form;
-		form.render();
+    layui.use("audio", layui.factory("audio")).use(["admin", "useradmin", "table", "laydate", "form"], function() {
+        var $ = layui.$,
+            admin = layui.admin,
+            view = layui.view,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        form.render();
 
-		/*加载目录分类下拉框*/
-		$.ajax({
-			url: layui.setter.urll + "/api/admin/class/audio/all",
-			method: "get",
-			data: {
-				token: layui.data("data").token,
-			},
-			success: function (result) {
-				var list = result["data"]; //返回的数据
-				var server = document.getElementById("catalogType");
-				for (var p in list) {
-					var option = document.createElement("option");
-					option.setAttribute("value", list[p].id);
-					option.innerText = list[p].className;
-					server.appendChild(option);
-					form.render("select");
-				}
-			},
-		});
+        /*加载目录分类下拉框*/
+        $.ajax({
+            url: layui.setter.urll + "/api/admin/class/audio/all",
+            method: "get",
+            data: {
+                token: layui.data("data").token,
+            },
+            success: function(result) {
+                var list = result["data"]; //返回的数据
+                var server = document.getElementById("catalogType");
+                for (var p in list) {
+                    var option = document.createElement("option");
+                    option.setAttribute("value", list[p].id);
+                    option.innerText = list[p].className;
+                    server.appendChild(option);
+                    form.render("select");
+                }
+            },
+        });
 
-		/*监听搜索*/
-		form.on("submit(LAY-audio-front-search)", function (data) {
-			var field = data.field;
-			console.log(field);
-			table.reload("LAY-catalog-manage", {
-				url: layui.setter.urll + "/api/admin/audio/dir/search",
-				method: "get",
-				where: {
-					token: layui.data("data").token,
-					title: field.title.replace(/\s*/g, "") /*标题*/,
-					flag: field.isPay /*是否付费*/,
-					state: field.isUpper /*是否上架*/,
-					rec: field.catalog /*目录分类*/,
-					age: 1,
-				},
-				page: true,
-			});
-		});
+        /*监听搜索*/
+        form.on("submit(LAY-audio-front-search)", function(data) {
+            var field = data.field;
+            console.log(field);
+            table.reload("LAY-catalog-manage", {
+                url: layui.setter.urll + "/api/admin/audio/dir/search",
+                method: "get",
+                where: {
+                    token: layui.data("data").token,
+                    title: field.title.replace(/\s*/g, "") /*标题*/ ,
+                    flag: field.isPay /*是否付费*/ ,
+                    state: field.isUpper /*是否上架*/ ,
+                    rec: field.catalog /*目录分类*/ ,
+                    age: 1,
+                },
+                page: true,
+            });
+        });
 
-		/*点击查看大图*/
-		$("body").on("click", ".img", function () {
-			layer.open({
-				type: 1,
-				title: false,
-				closeBtn: 0,
-				area: "auto",
-				maxHeight: 700,
-				maxWidth: 700,
-				skin: "layui-layer-nobg", //没有背景色
-				shadeClose: true,
-				content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr("src") + '"/>',
-			});
-			e.stopPropagation();
-		});
+        /*点击查看大图*/
+        $("body").on("click", ".img", function() {
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 0,
+                area: "auto",
+                maxHeight: 700,
+                maxWidth: 700,
+                skin: "layui-layer-nobg", //没有背景色
+                shadeClose: true,
+                content: '<img style="max-width: 600px;max-height: 600px;" src="' + $(this).attr("src") + '"/>',
+            });
+            e.stopPropagation();
+        });
 
-		//事件
-		var active = {
-			add: function () {
-				admin.popup({
-					title: "添加目录",
-					area: ["550px", "500px"],
-					id: "LAY-popup-user-add",
-					success: function (layero, index) {
-						view(this.id)
-							.render("audio/addCatalog")
-							.done(function () {
-								form.render();
-								form.on("submit(LAY-catalog-front-submit)", function (data) {
-									var field = data.field; //获取提交的字段
-									console.log(field);
-									var id = "";
-									var arr = new Array();
-									$("input:checkbox[name='checkbox']:checked").each(function (i) {
-										id += $(this).attr("id") + ",";
-										//									arr[i] = $(this).val();
-									});
-									//					            console.log(arr);
-									id = id.slice(0, -1);
-									console.log(field);
-									field.adminId=layui.data("data").uid;
-									$.ajax({
-										url: layui.setter.urll + "/api/admin/audio/dir/add",
-										method: "post",
-										contentType: "application/json;charset=UTF-8",
-										data: JSON.stringify(Object.assign({
-											token: layui.data("data").token,
-											classId: field.cataType /*分类id*/,
-											flag: 1 /*音频*/,
-											title: field.catalogTitle /*目录标题*/,
-											introduce: field.catalogIntroduce /*目录介绍*/,
-											catalogType: field.catalogType /*目录分类*/,
-											tag: id /*目录标签*/,
-											imagePath: field.demo2 /*封面图片*/,
-											price: field.price /*价格*/,
-											ifRec: field.ifRec /*是否推荐*/,
-											ifRel: field.ifRel /*是否上架*/,
-											boutique:field.boutique //精品、vip、普通
-										},field)),
-										success: function (data) {
-											if (data.data == 1) {
-												layer.msg("已添加", {icon: 1});
-												layui.table.reload("LAY-catalog-manage");
-											} else {
-												layer.msg("添加失败，请稍后重试", {icon: 2});
-											}
-										},
-										error: function (data) {
-											layer.msg("添加失败，请稍后重试", {icon: 2});
-										},
-									});
-									layer.close(index);
-								});
-							});
-					},
-				});
-			},
-			setHot() {},
-		};
+        // 缓存当前操作的是哪个表格的哪个tr的哪个td
+        $(document).off('mousedown', '.layui-table-grid-down')
+            .on('mousedown', '.layui-table-grid-down', function(event) {
+                table._tableTrCurr = $(this).closest('td');
+            });
 
-		$(".layui-btn.layuiadmin-btn-useradmin").on("click", function () {
-			var type = $(this).data("type");
-			active[type] ? active[type].call(this) : "";
-		});
-	});
+        $(document).off('click', '.layui-table-tips-main [lay-event]')
+            .on('click', '.layui-table-tips-main [lay-event]', function(event) {
+                var elem = $(this);
+                var tableTrCurr = table._tableTrCurr;
+                if (!tableTrCurr) {
+                    return;
+                }
+                var layerIndex = elem.closest('.layui-table-tips').attr('times');
+                // 关闭当前这个显示更多的tip
+                layer.close(layerIndex);
+                table._tableTrCurr.find('[lay-event="' + elem.attr('lay-event') + '"]').first().click();
+            });
+
+        //事件
+        var active = {
+            add: function() {
+                admin.popup({
+                    title: "添加目录",
+                    area: ["550px", "500px"],
+                    id: "LAY-popup-user-add",
+                    success: function(layero, index) {
+                        view(this.id)
+                            .render("audio/addCatalog")
+                            .done(function() {
+                                form.render();
+                                form.on("submit(LAY-catalog-front-submit)", function(data) {
+                                    var field = data.field; //获取提交的字段
+                                    console.log(field);
+                                    console.log(layui.data("data"));
+                                    if (!field.checkbox) {
+                                        layer.alert('请选择目录标签', {
+                                            icon: 2
+                                        });
+                                        return
+                                    }
+                                    if (!field.checkbox) {
+                                        layer.alert('请选择目录标签', {
+                                            icon: 2
+                                        });
+                                        return
+                                    }
+                                    if (!field.demo2) {
+                                        layer.alert('请上传图片', {
+                                            icon: 2
+                                        });
+                                        return
+                                    }
+                                    if (!field.reciter) {
+                                        layer.alert('请选择朗诵者', {
+                                            icon: 2
+                                        });
+                                        return
+                                    }
+                                    if (!field.uid) {
+                                        layer.alert('请选择作者', {
+                                            icon: 2
+                                        });
+                                        return
+                                    }
+                                    var id = "";
+                                    var arr = new Array();
+                                    $("input:checkbox[name='checkbox']:checked").each(function(i) {
+                                        id += $(this).attr("id") + ",";
+                                        //									arr[i] = $(this).val();
+                                    });
+                                    //					            console.log(arr);
+                                    id = id.slice(0, -1);
+                                    console.log(field);
+                                    field.adminId = layui.data("data").uid;
+                                    $.ajax({
+                                        url: layui.setter.urll + "/api/admin/audio/dir/add",
+                                        method: "post",
+                                        contentType: "application/json;charset=UTF-8",
+                                        data: JSON.stringify(Object.assign({
+                                            token: layui.data("data").token,
+                                            classId: field.cataType /*分类id*/ ,
+                                            flag: 1 /*音频*/ ,
+                                            title: field.catalogTitle /*目录标题*/ ,
+                                            introduce: field.catalogIntroduce /*目录介绍*/ ,
+                                            catalogType: field.catalogType /*目录分类*/ ,
+                                            tag: id /*目录标签*/ ,
+                                            imagePath: field.demo2 /*封面图片*/ ,
+                                            price: field.price /*价格*/ ,
+                                            ifRec: field.ifRec /*是否推荐*/ ,
+                                            ifRel: field.ifRel /*是否上架*/ ,
+                                            boutique: field.boutique //精品、vip、普通
+                                        }, field)),
+                                        success: function(data) {
+                                            if (data.data == 1) {
+                                                layer.msg("已添加", {
+                                                    icon: 1
+                                                });
+                                                layui.table.reload("LAY-catalog-manage");
+                                            } else {
+                                                layer.msg("添加失败，请稍后重试", {
+                                                    icon: 2
+                                                });
+                                            }
+                                        },
+                                        error: function(data) {
+                                            layer.msg("添加失败，请稍后重试", {
+                                                icon: 2
+                                            });
+                                        },
+                                    });
+                                    layer.close(index);
+                                });
+                            });
+                    },
+                });
+            },
+            setHot() {},
+        };
+
+        $(".layui-btn.layuiadmin-btn-useradmin").on("click", function() {
+            var type = $(this).data("type");
+            active[type] ? active[type].call(this) : "";
+        });
+    });
 </script>
